@@ -20,7 +20,7 @@ export default function ResetPassword() {
     e.preventDefault();
     setError("");
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("รหัสผ่านไม่ตรงกัน");
       return;
     }
     setLoading(true);
@@ -38,16 +38,16 @@ export default function ResetPassword() {
     return (
       <AuthLayout
         icon={AlertTriangle}
-        title="Invalid reset link"
-        subtitle="This password reset link is missing or invalid"
+        title="ลิงก์ไม่ถูกต้อง"
+        subtitle="ลิงก์รีเซ็ตรหัสผ่านนี้หายไปหรือไม่ถูกต้อง"
         footer={
           <Link to="/forgot-password" className="text-primary font-medium hover:underline">
-            Request a new link
+            ขอลิงก์ใหม่
           </Link>
         }
       >
         <p className="text-sm text-foreground text-center">
-          The link you used appears to be incomplete. Please request a new password reset email.
+          ลิงก์ที่คุณใช้อาจไม่สมบูรณ์ กรุณาขอรีเซ็ตรหัสผ่านใหม่อีกครั้ง
         </p>
       </AuthLayout>
     );
@@ -56,8 +56,8 @@ export default function ResetPassword() {
   return (
     <AuthLayout
       icon={Lock}
-      title="New password"
-      subtitle="Enter your new password below"
+      title="ตั้งรหัสผ่านใหม่"
+      subtitle="กรุณากรอกรหัสผ่านใหม่"
     >
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
@@ -66,7 +66,7 @@ export default function ResetPassword() {
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="password">New Password</Label>
+          <Label htmlFor="password">รหัสผ่านใหม่</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -83,7 +83,7 @@ export default function ResetPassword() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
+          <Label htmlFor="confirm">ยืนยันรหัสผ่าน</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -102,10 +102,10 @@ export default function ResetPassword() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Resetting...
+              กำลังรีเซ็ต...
             </>
           ) : (
-            "Reset password"
+            "รีเซ็ตรหัสผ่าน"
           )}
         </Button>
       </form>

@@ -1,0 +1,69 @@
+{
+  "name": "Quiz",
+  "type": "object",
+  "properties": {
+    "subject": {
+      "type": "string",
+      "description": "\u0e27\u0e34\u0e0a\u0e32"
+    },
+    "difficulty_level": {
+      "type": "number",
+      "description": "\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e04\u0e27\u0e32\u0e21\u0e22\u0e32\u0e01 1-5"
+    },
+    "questions": {
+      "type": "array",
+      "description": "\u0e02\u0e49\u0e2d\u0e2a\u0e2d\u0e1a",
+      "items": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "question": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correct_answer": {
+            "type": "number"
+          },
+          "explanation": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "user_answers": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "score": {
+      "type": "number"
+    },
+    "total_questions": {
+      "type": "number"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "quiz_type": {
+      "type": "string",
+      "enum": [
+        "practice",
+        "battle",
+        "tournament"
+      ],
+      "default": "practice"
+    }
+  },
+  "required": [
+    "subject"
+  ]
+}

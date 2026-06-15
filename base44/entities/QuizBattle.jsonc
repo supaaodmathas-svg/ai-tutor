@@ -1,0 +1,81 @@
+{
+  "name": "QuizBattle",
+  "type": "object",
+  "properties": {
+    "subject": {
+      "type": "string"
+    },
+    "challenger_id": {
+      "type": "string",
+      "description": "ID \u0e1c\u0e39\u0e49\u0e17\u0e49\u0e32"
+    },
+    "challenger_name": {
+      "type": "string"
+    },
+    "opponent_id": {
+      "type": "string",
+      "description": "ID \u0e1c\u0e39\u0e49\u0e16\u0e39\u0e01\u0e17\u0e49\u0e32"
+    },
+    "opponent_name": {
+      "type": "string"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "question": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correct_answer": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "challenger_answers": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "opponent_answers": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "challenger_score": {
+      "type": "number",
+      "default": 0
+    },
+    "opponent_score": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed"
+      ],
+      "default": "pending"
+    },
+    "winner_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "subject"
+  ]
+}
