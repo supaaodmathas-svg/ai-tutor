@@ -98,7 +98,7 @@ export default function Layout() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
-          <span className="font-display font-bold">AI Tutor</span>
+          <span className="font-display font-bold">Iknow</span>
         </Link>
 
         <div className="flex items-center gap-3">
