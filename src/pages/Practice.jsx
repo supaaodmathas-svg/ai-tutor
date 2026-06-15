@@ -64,14 +64,17 @@ export default function Practice() {
 
     setLoading(true);
     const level = getAdaptiveLevel(selectedSubject);
-    const tokenCostFinal = tokenCost;
+
+    // หัก token ก่อนเสมอ ตามจำนวนที่เลือก
+    await base44.auth.updateMe({ tokens: (user?.tokens ?? 0) - tokenCost });
 
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `สร้างข้อสอบวิชา ${selectedSubject} สำหรับนักเรียนระดับมัธยมปลาย จำนวน ${count} ข้อ
+      prompt: `สร้างข้อสอบวิชา ${selectedSubject} สำหรับนักเรียนระดับมัธยมปลาย จำนวน ${count} ข้อพอดี ห้ามสร้างมากกว่าหรือน้อยกว่า ${count} ข้อ
 ระดับความยาก: ${level}/5 (Adaptive Learning)
 - ถ้าระดับ ${level} ให้ข้อสอบกระจายรอบๆ ระดับนั้น (±1)
 - ข้อสอบต้องหลากหลายหัวข้อ ไม่ซ้ำกัน
-- แต่ละข้อมี 4 ตัวเลือก
+- แต่ละข้อมี 4 ตัวเลือก (choices มี 4 รายการเสมอ)
+- correct_answer คือ index 0-3
 - เนื้อหาเป็นภาษาไทย ตรงหลักสูตร`,
       response_json_schema: {
         type: "object",
@@ -91,14 +94,12 @@ export default function Practice() {
           }
         }
       },
-      add_context_from_internet: true,
     });
 
-    // หัก token
-    await base44.auth.updateMe({ tokens: (user?.tokens ?? 0) - tokenCostFinal });
-
-    setQuestions(res.questions || []);
-    setAnswers(new Array(count).fill(-1));
+    // ตัดข้อสอบให้เหลือแค่ count ข้อพอดี ไม่เกิน
+    const fetchedQuestions = (res.questions || []).slice(0, count);
+    setQuestions(fetchedQuestions);
+    setAnswers(new Array(fetchedQuestions.length).fill(-1));
     setCurrentIndex(0);
     setResult(null);
     setShowExplanation(false);
@@ -310,7 +311,7 @@ export default function Practice() {
             ถัดไป →
           </Button>
         ) : (
-          <Button onClick={handleSubmit} disabled={answers.includes(-1)}
+          <Button onClick={handleSubmit}
             className="bg-gradient-to-r from-primary to-accent">
             <CheckCircle className="w-4 h-4 mr-2" />
             ส่งคำตอบ
