@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -6,17 +6,72 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Zap, Crown, CheckCircle, QrCode, Wallet, Loader2, Gift } from "lucide-react";
+import { CreditCard, Zap, Crown, CheckCircle, QrCode, Wallet, Loader2, Gift, ExternalLink, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 
+// ============================================================
+// ⚙️  ตั้งค่าการชำระเงินจริง — แก้ค่าเหล่านี้
+// ============================================================
+const PROMPTPAY_NUMBER = "0812345678"; // เบอร์ PromptPay หรือ เลขบัตรประชาชน
+const TRUEWALLET_LINK  = "https://gift.truemoney.com/campaign/?v=XXXXXXXXXX"; // ลิงก์ True Wallet ของคุณ
+// ============================================================
+
 const tokenPackages = [
-  { tokens: 50, price: 29, label: "Starter", popular: false },
-  { tokens: 150, price: 79, label: "Popular", popular: true },
-  { tokens: 500, price: 199, label: "Best Value", popular: false },
+  {
+    tokens: 200,
+    price: 49,
+    label: "Starter",
+    perToken: "0.24",
+    popular: false,
+    color: "from-blue-500 to-blue-600",
+    bgLight: "from-blue-50 to-blue-100",
+    border: "border-blue-200",
+  },
+  {
+    tokens: 450,
+    price: 99,
+    label: "Popular",
+    perToken: "0.22",
+    popular: true,
+    color: "from-primary to-accent",
+    bgLight: "from-violet-50 to-sky-50",
+    border: "border-primary",
+  },
+  {
+    tokens: 750,
+    price: 179,
+    label: "Best Value",
+    perToken: "0.24",
+    popular: false,
+    color: "from-emerald-500 to-green-600",
+    bgLight: "from-emerald-50 to-green-50",
+    border: "border-emerald-200",
+  },
 ];
 
 const premiumPrice = 299;
+
+// Generate PromptPay QR URL via promptpay.io
+function getPromptPayQR(phone, amount) {
+  return `https://promptpay.io/${phone.replace(/-/g, "")}/${amount}.png`;
+}
+
+// Auto-close timer component
+function CountdownClose({ seconds, onClose }) {
+  const [left, setLeft] = useState(seconds);
+  useEffect(() => {
+    if (left <= 0) { onClose(); return; }
+    const t = setTimeout(() => setLeft(l => l - 1), 1000);
+    return () => clearTimeout(t);
+  }, [left]);
+  return (
+    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-2">
+      <span>ปิดอัตโนมัติใน</span>
+      <span className="font-bold text-primary">{left}s</span>
+    </div>
+  );
+}
 
 export default function Tokens() {
   const { user } = useAuth();
@@ -26,22 +81,24 @@ export default function Tokens() {
   const [showPayment, setShowPayment] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [isPremiumPurchase, setIsPremiumPurchase] = useState(false);
+  const [paid, setPaid] = useState(false);
 
   const handlePurchase = (pkg) => {
     setSelectedPackage(pkg);
     setIsPremiumPurchase(false);
+    setPaid(false);
     setShowPayment(true);
   };
 
   const handlePremium = () => {
     setSelectedPackage({ tokens: 200, price: premiumPrice, label: "Premium" });
     setIsPremiumPurchase(true);
+    setPaid(false);
     setShowPayment(true);
   };
 
   const confirmPayment = async () => {
     setProcessing(true);
-    // สร้าง transaction record
     await base44.entities.Transaction.create({
       type: isPremiumPurchase ? "premium_upgrade" : "token_purchase",
       amount: selectedPackage.price,
@@ -50,79 +107,78 @@ export default function Tokens() {
       status: "completed",
       reference_id: `TXN-${Date.now()}`,
     });
-
-    // อัปเดต user
-    const updateData = {
-      tokens: (user?.tokens ?? 50) + selectedPackage.tokens,
-    };
-    if (isPremiumPurchase) {
-      updateData.is_premium = true;
-    }
+    const updateData = { tokens: (user?.tokens ?? 0) + selectedPackage.tokens };
+    if (isPremiumPurchase) updateData.is_premium = true;
     await base44.auth.updateMe(updateData);
-
     setProcessing(false);
+    setPaid(true);
+  };
+
+  const closeDialog = () => {
     setShowPayment(false);
-    toast({
-      title: isPremiumPurchase ? "🎉 อัปเกรด Premium สำเร็จ!" : "✅ เติม Token สำเร็จ!",
-      description: `ได้รับ ${selectedPackage.tokens} Tokens`,
-    });
+    setPaid(false);
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-2xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <CreditCard className="w-5 h-5 text-primary" />
+        {/* Balance Card */}
+        <Card className="p-6 border-0 shadow-xl bg-gradient-to-br from-primary via-primary/90 to-accent text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="w-64 h-64 rounded-full bg-white absolute -top-20 -right-20" />
+            <div className="w-40 h-40 rounded-full bg-white absolute -bottom-10 -left-10" />
           </div>
-          <div>
-            <h1 className="text-2xl font-display font-bold">เติม Token</h1>
-            <p className="text-sm text-muted-foreground">Token คงเหลือ: {user?.tokens ?? 50}</p>
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <p className="text-sm opacity-75 mb-1">Token คงเหลือ</p>
+              <p className="text-5xl font-display font-black">{user?.tokens ?? 0}</p>
+              <p className="text-sm opacity-75 mt-1">Tokens</p>
+            </div>
+            <div className="text-right">
+              <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-2">
+                <Zap className="w-8 h-8" />
+              </div>
+              {user?.is_premium && (
+                <Badge className="bg-amber-400 text-amber-900 text-xs">
+                  <Crown className="w-3 h-3 mr-1" /> PRO
+                </Badge>
+              )}
+            </div>
           </div>
-        </div>
+          <div className="relative z-10 mt-4 pt-4 border-t border-white/20 grid grid-cols-3 gap-4 text-center text-xs">
+            <div><p className="opacity-60">ฝึกข้อสอบ</p><p className="font-bold">10/ข้อ</p></div>
+            <div><p className="opacity-60">Quiz Battle</p><p className="font-bold">5 Tokens</p></div>
+            <div><p className="opacity-60">Tournament</p><p className="font-bold">10 Tokens</p></div>
+          </div>
+        </Card>
       </motion.div>
 
-      {/* Current Balance */}
-      <Card className="p-6 border-0 shadow-lg bg-gradient-to-r from-primary to-accent text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm opacity-80">Token คงเหลือ</p>
-            <p className="text-4xl font-display font-bold mt-1">{user?.tokens ?? 50}</p>
-          </div>
-          <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
-            <Zap className="w-8 h-8" />
-          </div>
-        </div>
-        {user?.is_premium && (
-          <Badge className="mt-3 bg-amber-400 text-amber-900">
-            <Crown className="w-3 h-3 mr-1" /> Premium Active
-          </Badge>
-        )}
-      </Card>
-
-      {/* Premium Card */}
+      {/* Premium */}
       {!user?.is_premium && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="p-6 border-2 border-amber-300 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50 relative overflow-hidden">
+          <Card className="p-6 border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 relative overflow-hidden shadow-lg">
             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/30 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-3">
                 <Crown className="w-6 h-6 text-amber-600" />
                 <h2 className="text-xl font-display font-bold text-amber-900">AI Tutor Pro</h2>
+                <Badge className="bg-amber-500 text-white text-xs ml-auto">ยอดนิยม</Badge>
               </div>
-              <p className="text-sm text-amber-700 mb-4">อัปเกรดเพื่อรับสิทธิพิเศษ</p>
-              <ul className="space-y-2 mb-4">
+              <div className="grid grid-cols-2 gap-2 mb-4">
                 {["ได้รับ 200 Tokens ทันที", "ข้อสอบระดับสูงพิเศษ", "วิเคราะห์ผลละเอียด", "ไม่มีโฆษณา"].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-amber-800">
-                    <CheckCircle className="w-4 h-4 text-amber-600" />
+                  <div key={i} className="flex items-center gap-1.5 text-sm text-amber-800">
+                    <CheckCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
                     {item}
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
               <div className="flex items-center justify-between">
-                <p className="text-2xl font-display font-bold text-amber-900">฿{premiumPrice}<span className="text-sm font-normal">/เดือน</span></p>
-                <Button onClick={handlePremium} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                  อัปเกรดเลย
+                <div>
+                  <p className="text-3xl font-display font-black text-amber-900">฿{premiumPrice}</p>
+                  <p className="text-xs text-amber-600">/เดือน</p>
+                </div>
+                <Button onClick={handlePremium} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">
+                  อัปเกรดเลย →
                 </Button>
               </div>
             </div>
@@ -133,23 +189,32 @@ export default function Tokens() {
       {/* Token Packages */}
       <div>
         <h2 className="text-lg font-heading font-bold mb-4">แพ็คเกจ Token</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {tokenPackages.map((pkg, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <Card className={`p-6 border-0 shadow-md relative ${pkg.popular ? "ring-2 ring-primary" : ""}`}>
+            <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}>
+              <Card className={`p-5 border-2 ${pkg.border} shadow-sm hover:shadow-lg transition-all relative overflow-hidden ${pkg.popular ? "ring-2 ring-primary/30" : ""}`}>
                 {pkg.popular && (
-                  <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary">ยอดนิยม</Badge>
-                )}
-                <div className="text-center">
-                  <div className="w-14 h-14 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
-                    <Zap className="w-7 h-7 text-primary" />
+                  <div className={`absolute top-0 right-0 bg-gradient-to-bl ${pkg.color} text-white text-xs font-bold px-3 py-1 rounded-bl-xl`}>
+                    ยอดนิยม
                   </div>
-                  <p className="text-3xl font-display font-bold">{pkg.tokens}</p>
-                  <p className="text-sm text-muted-foreground mb-4">Tokens</p>
-                  <p className="text-2xl font-bold mb-4">฿{pkg.price}</p>
-                  <Button onClick={() => handlePurchase(pkg)} className="w-full" variant={pkg.popular ? "default" : "outline"}>
-                    ซื้อเลย
-                  </Button>
+                )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${pkg.color} flex items-center justify-center shadow-md`}>
+                      <Zap className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-display font-black">{pkg.tokens} <span className="text-base font-normal text-muted-foreground">Tokens</span></p>
+                      <p className="text-xs text-muted-foreground">≈ {pkg.perToken} บาท/Token</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-display font-bold">฿{pkg.price}</p>
+                    <Button onClick={() => handlePurchase(pkg)} size="sm"
+                      className={`mt-1 bg-gradient-to-r ${pkg.color} text-white border-0 shadow`}>
+                      ซื้อเลย
+                    </Button>
+                  </div>
                 </div>
               </Card>
             </motion.div>
@@ -158,64 +223,82 @@ export default function Tokens() {
       </div>
 
       {/* Payment Dialog */}
-      <Dialog open={showPayment} onOpenChange={setShowPayment}>
-        <DialogContent className="max-w-md">
+      <Dialog open={showPayment} onOpenChange={closeDialog}>
+        <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-center">
-              {isPremiumPurchase ? "อัปเกรด Premium" : "ชำระเงิน"}
+              {paid ? "✅ ชำระเงินสำเร็จ!" : isPremiumPurchase ? "อัปเกรด Premium" : "ชำระเงิน"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="text-center p-4 bg-secondary/50 rounded-xl">
-              <p className="text-sm text-muted-foreground">{isPremiumPurchase ? "Premium + 200 Tokens" : `${selectedPackage?.tokens} Tokens`}</p>
-              <p className="text-3xl font-display font-bold mt-1">฿{selectedPackage?.price}</p>
+
+          {paid ? (
+            <div className="text-center py-4 space-y-3">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto">
+                <CheckCircle className="w-8 h-8 text-green-500" />
+              </div>
+              <p className="font-heading font-bold text-lg">+{selectedPackage?.tokens} Tokens</p>
+              <p className="text-sm text-muted-foreground">เพิ่ม Token เรียบร้อยแล้ว</p>
+              <CountdownClose seconds={3} onClose={closeDialog} />
             </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="text-center p-4 bg-secondary/50 rounded-xl">
+                <p className="text-sm text-muted-foreground">{isPremiumPurchase ? "Premium + 200 Tokens" : `${selectedPackage?.tokens} Tokens`}</p>
+                <p className="text-4xl font-display font-black mt-1">฿{selectedPackage?.price}</p>
+              </div>
 
-            <Tabs value={paymentMethod} onValueChange={setPaymentMethod}>
-              <TabsList className="w-full">
-                <TabsTrigger value="promptpay" className="flex-1">
-                  <QrCode className="w-4 h-4 mr-2" /> PromptPay
-                </TabsTrigger>
-                <TabsTrigger value="truewallet" className="flex-1">
-                  <Wallet className="w-4 h-4 mr-2" /> True Wallet
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="promptpay">
-                <Card className="p-6 border-0 bg-secondary/30 text-center">
-                  <div className="w-48 h-48 mx-auto bg-white rounded-xl border-2 border-dashed border-border flex items-center justify-center mb-3">
-                    <div className="text-center">
-                      <QrCode className="w-16 h-16 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-xs text-muted-foreground">PromptPay QR Code</p>
+              <Tabs value={paymentMethod} onValueChange={setPaymentMethod}>
+                <TabsList className="w-full">
+                  <TabsTrigger value="promptpay" className="flex-1">
+                    <QrCode className="w-4 h-4 mr-1.5" /> PromptPay
+                  </TabsTrigger>
+                  <TabsTrigger value="truewallet" className="flex-1">
+                    <Wallet className="w-4 h-4 mr-1.5" /> True Wallet
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="promptpay">
+                  <div className="text-center space-y-3 pt-2">
+                    <div className="w-52 h-52 mx-auto rounded-2xl overflow-hidden border-2 border-primary/20 shadow-inner bg-white">
+                      <img
+                        src={getPromptPayQR(PROMPTPAY_NUMBER, selectedPackage?.price ?? 0)}
+                        alt="PromptPay QR"
+                        className="w-full h-full object-contain p-2"
+                        onError={(e) => { e.target.src = ""; e.target.parentElement.innerHTML = `<div class='flex flex-col items-center justify-center h-full text-muted-foreground'><svg class='w-12 h-12 mb-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z'/></svg><p class='text-xs'>PromptPay: ${PROMPTPAY_NUMBER}</p><p class='text-xs'>฿${selectedPackage?.price ?? 0}</p></div>`; }}
+                      />
                     </div>
+                    <p className="text-sm font-medium">สแกน QR เพื่อชำระ ฿{selectedPackage?.price}</p>
+                    <p className="text-xs text-muted-foreground">พร้อมเพย์: {PROMPTPAY_NUMBER}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground">สแกน QR Code เพื่อชำระเงิน</p>
-                  <p className="text-xs text-muted-foreground mt-1">จำนวน ฿{selectedPackage?.price}</p>
-                </Card>
-              </TabsContent>
-              <TabsContent value="truewallet">
-                <Card className="p-6 border-0 bg-secondary/30 text-center">
-                  <div className="w-20 h-20 mx-auto bg-orange-100 rounded-2xl flex items-center justify-center mb-3">
-                    <Gift className="w-10 h-10 text-orange-500" />
-                  </div>
-                  <p className="text-lg font-bold mb-1">True Wallet ซอง</p>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    ส่งซองอังเปาจำนวน ฿{selectedPackage?.price}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    ส่งซองมาที่ลิงก์ด้านล่าง แล้วกดยืนยัน
-                  </p>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                </TabsContent>
 
-            <Button onClick={confirmPayment} disabled={processing} className="w-full bg-gradient-to-r from-primary to-accent">
-              {processing ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> กำลังดำเนินการ...</>
-              ) : (
-                <><CheckCircle className="w-4 h-4 mr-2" /> ยืนยันการชำระเงิน</>
-              )}
-            </Button>
-          </div>
+                <TabsContent value="truewallet">
+                  <div className="text-center space-y-3 pt-2">
+                    <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg">
+                      <Gift className="w-10 h-10 text-white" />
+                    </div>
+                    <p className="text-lg font-bold">True Wallet ซอง</p>
+                    <p className="text-sm text-muted-foreground">ส่งซองอั่งเปาจำนวน <span className="font-bold text-foreground">฿{selectedPackage?.price}</span></p>
+                    <a href={TRUEWALLET_LINK} target="_blank" rel="noopener noreferrer">
+                      <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white gap-2">
+                        <ExternalLink className="w-4 h-4" />
+                        เปิดลิงก์ True Wallet
+                      </Button>
+                    </a>
+                    <p className="text-xs text-muted-foreground">หลังส่งซองแล้ว กดยืนยันด้านล่าง</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              <Button onClick={confirmPayment} disabled={processing} className="w-full h-12 bg-gradient-to-r from-primary to-accent text-white shadow-lg">
+                {processing ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> กำลังดำเนินการ...</>
+                ) : (
+                  <><CheckCircle className="w-4 h-4 mr-2" /> ฉันชำระเงินแล้ว</>
+                )}
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

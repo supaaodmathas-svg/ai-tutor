@@ -54,15 +54,17 @@ export default function Practice() {
   };
 
   const startQuiz = async () => {
-    if ((user?.tokens ?? 50) < 1) {
-      toast({ title: "Token ไม่เพียงพอ", description: "กรุณาเติม Token เพื่อทำข้อสอบ", variant: "destructive" });
+    const count = parseInt(numQuestions);
+    const tokenCost = count * 10;
+    if ((user?.tokens ?? 0) < tokenCost) {
+      toast({ title: "⚠️ Token ไม่เพียงพอ", description: `ต้องใช้ ${tokenCost} Tokens กรุณาเติม Token ก่อน`, variant: "destructive" });
+      setTimeout(() => { window.location.href = "/tokens"; }, 2000);
       return;
     }
 
     setLoading(true);
     const level = getAdaptiveLevel(selectedSubject);
-    const count = parseInt(numQuestions);
-    const tokenCost = Math.ceil(count / 5);
+    const tokenCostFinal = tokenCost;
 
     const res = await base44.integrations.Core.InvokeLLM({
       prompt: `สร้างข้อสอบวิชา ${selectedSubject} สำหรับนักเรียนระดับมัธยมปลาย จำนวน ${count} ข้อ
@@ -93,7 +95,7 @@ export default function Practice() {
     });
 
     // หัก token
-    await base44.auth.updateMe({ tokens: (user?.tokens ?? 50) - tokenCost });
+    await base44.auth.updateMe({ tokens: (user?.tokens ?? 0) - tokenCostFinal });
 
     setQuestions(res.questions || []);
     setAnswers(new Array(count).fill(-1));
@@ -200,20 +202,28 @@ export default function Practice() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="5">5 ข้อ (1 Token)</SelectItem>
-                  <SelectItem value="10">10 ข้อ (2 Tokens)</SelectItem>
-                  <SelectItem value="20">20 ข้อ (4 Tokens)</SelectItem>
+                  <SelectItem value="5">5 ข้อ (50 Tokens)</SelectItem>
+                  <SelectItem value="10">10 ข้อ (100 Tokens)</SelectItem>
+                  <SelectItem value="20">20 ข้อ (200 Tokens)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="p-3 rounded-xl bg-secondary/50 text-sm">
+            <div className="p-3 rounded-xl bg-secondary/50 text-sm space-y-1">
               <div className="flex items-center justify-between">
                 <span>ระดับ Adaptive</span>
                 <Badge>Level {getAdaptiveLevel(selectedSubject)}</Badge>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                ระดับจะปรับตามผลคะแนนล่าสุดของคุณ
-              </p>
+              <div className="flex items-center justify-between">
+                <span>ค่าใช้จ่าย</span>
+                <Badge variant="outline">{parseInt(numQuestions) * 10} Tokens</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Token คงเหลือ</span>
+                <Badge variant={((user?.tokens ?? 0) >= parseInt(numQuestions) * 10) ? "secondary" : "destructive"}>
+                  {user?.tokens ?? 0} Tokens
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">ราคา 10 Tokens ต่อ 1 ข้อ</p>
             </div>
             <div className="flex gap-3">
               <Button variant="outline" onClick={reset} className="flex-1">

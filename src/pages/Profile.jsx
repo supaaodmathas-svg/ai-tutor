@@ -12,7 +12,7 @@ import { User, Save, Crown, Zap, BookOpen, Trophy, CheckCircle, Loader2 } from "
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 
-const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6", "ปวช.", "ปวส.", "มหาวิทยาลัย"];
+const gradeOptions = ["ม.4", "ม.5", "ม.6"];
 const subjectOptions = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
 export default function Profile() {

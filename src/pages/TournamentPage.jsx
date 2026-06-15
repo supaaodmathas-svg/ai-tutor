@@ -26,8 +26,9 @@ export default function TournamentPage() {
   });
 
   const joinTournament = async (tournament) => {
-    if ((user?.tokens ?? 50) < 3) {
-      toast({ title: "Token ไม่เพียงพอ", description: "ต้องใช้ 3 Tokens", variant: "destructive" });
+    if ((user?.tokens ?? 0) < 10) {
+      toast({ title: "⚠️ Token ไม่เพียงพอ", description: "ต้องใช้ 10 Tokens กรุณาเติม Token ก่อน", variant: "destructive" });
+      setTimeout(() => { window.location.href = "/tokens"; }, 2000);
       return;
     }
     const alreadyJoined = tournament.participants?.some(p => p.user_id === user.id);
@@ -44,7 +45,7 @@ export default function TournamentPage() {
     }
     const updatedParticipants = [...(tournament.participants || []), { user_id: user.id, user_name: user.full_name, score: 0, completed: false }];
     await base44.entities.Tournament.update(tournament.id, { participants: updatedParticipants });
-    await base44.auth.updateMe({ tokens: (user?.tokens ?? 50) - 3 });
+    await base44.auth.updateMe({ tokens: (user?.tokens ?? 0) - 10 });
     queryClient.invalidateQueries({ queryKey: ["tournaments"] });
     setActiveTournament({ ...tournament, participants: updatedParticipants });
     setAnswers(new Array(tournament.questions.length).fill(-1));
@@ -143,7 +144,7 @@ export default function TournamentPage() {
         </div>
         <div>
           <h1 className="text-2xl font-display font-bold">Tournament</h1>
-          <p className="text-sm text-muted-foreground">แข่งขันชิงอันดับ (ใช้ 3 Tokens)</p>
+          <p className="text-sm text-muted-foreground">แข่งขันชิงอันดับ (ใช้ 10 Tokens)</p>
         </div>
       </div>
 
@@ -184,7 +185,7 @@ export default function TournamentPage() {
                   className="w-full"
                   variant={joined ? "outline" : "default"}
                 >
-                  {completed ? "ดูผลลัพธ์" : joined ? "ทำข้อสอบต่อ" : "เข้าร่วม (3 Tokens)"}
+                  {completed ? "ดูผลลัพธ์" : joined ? "ทำข้อสอบต่อ" : "เข้าร่วม (10 Tokens)"}
                 </Button>
               </Card>
             );

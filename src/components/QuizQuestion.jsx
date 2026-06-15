@@ -12,6 +12,11 @@ export default function QuizQuestion({ question, index, total, selectedAnswer, o
     5: "bg-red-100 text-red-700",
   };
 
+  const cleanChoice = (choice) => {
+    // Remove leading A. B. C. D. prefixes to avoid duplication
+    return choice.replace(/^[A-Za-dก-ฮ]\.\s*/i, '').replace(/^[1-4]\.\s*/, '').trim();
+  };
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -78,7 +83,7 @@ export default function QuizQuestion({ question, index, total, selectedAnswer, o
                     >
                       {String.fromCharCode(65 + i)}
                     </div>
-                    <span className="pt-1 text-sm md:text-base">{choice}</span>
+                    <span className="pt-1 text-sm md:text-base">{cleanChoice(choice)}</span>
                   </div>
                 </button>
               );
