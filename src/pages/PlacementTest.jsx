@@ -28,7 +28,7 @@ export default function PlacementTest() {
   const generateQuestions = async () => {
     setLoading(true);
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมปลายประเทศไทย จำนวน 10 ข้อ โดยแบ่งเป็น:
+      prompt: `สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมศึกษาประเทศไทย (ม.1-6) จำนวน 10 ข้อ โดยแบ่งเป็น:
 - Level 1 (ง่ายมาก): 2 ข้อ - ทดสอบความรู้พื้นฐาน
 - Level 2 (ง่าย): 2 ข้อ - ทดสอบความเข้าใจ
 - Level 3 (ปานกลาง): 2 ข้อ - ทดสอบการประยุกต์ใช้

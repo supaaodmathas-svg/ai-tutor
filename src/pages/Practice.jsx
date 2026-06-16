@@ -1,23 +1,39 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import QuizQuestion from "@/components/QuizQuestion";
 import SubjectCard from "@/components/SubjectCard";
-import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw, ArrowRight } from "lucide-react";
+import LevelUpOverlay from "@/components/LevelUpOverlay";
+import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 
 const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
+const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
+
+const subjectTopics = {
+  "คณิตศาสตร์ 1": ["เซต", "ตรรกศาสตร์", "จำนวนจริง", "ความสัมพันธ์และฟังก์ชัน", "เรขาคณิตวิเคราะห์", "เมทริกซ์", "ภาคตัดกรวย"],
+  "คณิตศาสตร์ 2": ["ฟังก์ชันเอกซ์โพเนนเชียล", "ฟังก์ชันลอการิทึม", "ตรีโกณมิติ", "เวกเตอร์", "จำนวนเชิงซ้อน", "ความน่าจะเป็น", "สถิติ"],
+  "ฟิสิกส์": ["กลศาสตร์", "คลื่น", "ไฟฟ้าและแม่เหล็ก", "ความร้อน", "แสง", "เสียง", "ฟิสิกส์นิวเคลียร์"],
+  "เคมี": ["โครงสร้างอะตอม", "พันธะเคมี", "ปริมาณสารสัมพันธ์", "กรด-เบส", "เคมีอินทรีย์", "ไฟฟ้าเคมี", "แก๊ส"],
+  "ชีววิทยา": ["เซลล์", "การสังเคราะห์ด้วยแสง", "พันธุศาสตร์", "ระบบนิเวศ", "วิวัฒนาการ", "ระบบร่างกาย", "การจำแนกสิ่งมีชีวิต"],
+  "ภาษาอังกฤษ": ["Grammar", "Vocabulary", "Reading Comprehension", "Writing", "Error Detection", "Conversation", "Cloze Test"],
+  "ภาษาไทย": ["หลักภาษา", "วรรณคดี", "การอ่านจับใจความ", "การเขียน", "คำราชาศัพท์", "สำนวนไทย", "โวหาร"],
+  "สังคมศึกษา": ["ประวัติศาสตร์", "ภูมิศาสตร์", "เศรษฐศาสตร์", "หน้าที่พลเมือง", "ศาสนา", "กฎหมาย", "อาเซียน"],
+};
 
 export default function Practice() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedGrade, setSelectedGrade] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
   const [numQuestions, setNumQuestions] = useState("5");
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
@@ -25,9 +41,10 @@ export default function Practice() {
   const [answers, setAnswers] = useState([]);
   const [result, setResult] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [levelUp, setLevelUp] = useState(null);
 
   const { data: placements = [] } = useQuery({
-    queryKey: ["my-placements"],
+    queryKey: ["my-placements-practice"],
     queryFn: () => base44.entities.PlacementTest.filter({ completed: true }),
   });
 
@@ -36,7 +53,6 @@ export default function Practice() {
     return p?.result_level || 3;
   };
 
-  // Adaptive: ดึงข้อสอบล่าสุดเพื่อปรับระดับ
   const { data: recentQuizzes = [] } = useQuery({
     queryKey: ["recent-quizzes-adaptive"],
     queryFn: () => base44.entities.Quiz.filter({ completed: true }, "-created_date", 3),
@@ -46,7 +62,6 @@ export default function Practice() {
     const baseLevel = getLevel(subject);
     const recent = recentQuizzes.filter(q => q.subject === subject).slice(0, 3);
     if (recent.length === 0) return baseLevel;
-
     const avgScore = recent.reduce((a, q) => a + (q.score / q.total_questions), 0) / recent.length;
     if (avgScore >= 0.8 && baseLevel < 5) return Math.min(baseLevel + 1, 5);
     if (avgScore <= 0.4 && baseLevel > 1) return Math.max(baseLevel - 1, 1);
@@ -65,14 +80,15 @@ export default function Practice() {
     setLoading(true);
     const level = getAdaptiveLevel(selectedSubject);
 
-    // หัก token ก่อนเสมอ ตามจำนวนที่เลือก
     await base44.auth.updateMe({ tokens: (user?.tokens ?? 0) - tokenCost });
 
+    const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
+    const topicText = selectedTopic ? ` เนื้อหาเฉพาะเรื่อง: ${selectedTopic}` : "";
+
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `สร้างข้อสอบวิชา ${selectedSubject} สำหรับนักเรียนระดับมัธยมปลาย จำนวน ${count} ข้อพอดี ห้ามสร้างมากกว่าหรือน้อยกว่า ${count} ข้อ
+      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText}${topicText} จำนวน ${count} ข้อพอดี ห้ามสร้างมากกว่าหรือน้อยกว่า ${count} ข้อ
 ระดับความยาก: ${level}/5 (Adaptive Learning)
-- ถ้าระดับ ${level} ให้ข้อสอบกระจายรอบๆ ระดับนั้น (±1)
-- ข้อสอบต้องหลากหลายหัวข้อ ไม่ซ้ำกัน
+- ข้อสอบต้องเน้นเนื้อหาตามหัวข้อที่ระบุ
 - แต่ละข้อมี 4 ตัวเลือก (choices มี 4 รายการเสมอ)
 - correct_answer คือ index 0-3
 - เนื้อหาเป็นภาษาไทย ตรงหลักสูตร`,
@@ -94,9 +110,9 @@ export default function Practice() {
           }
         }
       },
+      add_context_from_internet: true,
     });
 
-    // ตัดข้อสอบให้เหลือแค่ count ข้อพอดี ไม่เกิน
     const fetchedQuestions = (res.questions || []).slice(0, count);
     setQuestions(fetchedQuestions);
     setAnswers(new Array(fetchedQuestions.length).fill(-1));
@@ -131,10 +147,36 @@ export default function Practice() {
     setResult(quizResult);
     setShowExplanation(true);
     setCurrentIndex(0);
+
+    // ---- Per-Subject Level Up ----
+    const currentSubjectLevels = user?.subject_levels || {};
+    const currentSubjLevel = currentSubjectLevels[selectedSubject] || 1;
+    const newSubjLevel = currentSubjLevel + 1;
+
+    // Check if crossed a 10-level threshold
+    const oldTens = Math.floor((currentSubjLevel - 1) / 10);
+    const newTens = Math.floor((newSubjLevel - 1) / 10);
+    const tokensEarned = newTens > oldTens ? 50 : 0;
+
+    const updatedLevels = { ...currentSubjectLevels, [selectedSubject]: newSubjLevel };
+    const meUpdate = { subject_levels: updatedLevels };
+    if (tokensEarned > 0) {
+      meUpdate.tokens = (user?.tokens ?? 0) + tokensEarned;
+    }
+    await base44.auth.updateMe(meUpdate);
+    queryClient.invalidateQueries({ queryKey: ["my-placements-practice"] });
+
+    if (tokensEarned > 0) {
+      setLevelUp({ subject: selectedSubject, newLevel: newSubjLevel, tokensEarned });
+    } else if (newSubjLevel % 5 === 0) {
+      setLevelUp({ subject: selectedSubject, newLevel: newSubjLevel, tokensEarned: 0 });
+    }
   };
 
   const reset = () => {
     setSelectedSubject(null);
+    setSelectedGrade("");
+    setSelectedTopic("");
     setQuestions([]);
     setResult(null);
     setShowExplanation(false);
@@ -191,11 +233,38 @@ export default function Practice() {
   }
 
   if (questions.length === 0) {
+    const topics = subjectTopics[selectedSubject] || [];
     return (
       <div className="max-w-md mx-auto space-y-6">
         <Card className="p-6 border-0 shadow-lg">
           <h2 className="text-xl font-display font-bold mb-4">{selectedSubject}</h2>
           <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">ระดับชั้น</label>
+              <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกระดับชั้น (ทุกชั้น)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>ทุกชั้น (ม.1-6)</SelectItem>
+                  {gradeOptions.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">หมวดหมู่เนื้อหา</label>
+              <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกหัวข้อ (ทุกหัวข้อ)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>ทุกหัวข้อ</SelectItem>
+                  {topics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div>
               <label className="text-sm font-medium mb-2 block">จำนวนข้อ</label>
               <Select value={numQuestions} onValueChange={setNumQuestions}>
@@ -243,41 +312,51 @@ export default function Practice() {
 
   if (result) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-          <Card className="p-8 border-0 shadow-xl text-center">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-display font-bold mb-2">ทำเสร็จแล้ว!</h1>
-            <p className="text-4xl font-display font-bold text-primary mb-1">
-              {result.score}/{result.total_questions}
-            </p>
-            <p className="text-muted-foreground mb-6">
-              {Math.round((result.score / result.total_questions) * 100)}% ถูกต้อง
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button onClick={reset} variant="outline" className="flex-1">
-                <RotateCcw className="w-4 h-4 mr-2" />
-                ทำใหม่
-              </Button>
-              <Button onClick={() => { setCurrentIndex(0); }} className="flex-1">
-                ดูเฉลย →
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
-
-        {showExplanation && questions.map((q, i) => (
-          <QuizQuestion
-            key={i}
-            question={q}
-            index={i}
-            total={questions.length}
-            selectedAnswer={answers[i]}
-            onAnswer={() => {}}
-            showResult
+      <>
+        {levelUp && (
+          <LevelUpOverlay
+            subject={levelUp.subject}
+            newLevel={levelUp.newLevel}
+            tokensEarned={levelUp.tokensEarned}
+            onClose={() => setLevelUp(null)}
           />
-        ))}
-      </div>
+        )}
+        <div className="max-w-2xl mx-auto space-y-6">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+            <Card className="p-8 border-0 shadow-xl text-center">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h1 className="text-2xl font-display font-bold mb-2">ทำเสร็จแล้ว!</h1>
+              <p className="text-4xl font-display font-bold text-primary mb-1">
+                {result.score}/{result.total_questions}
+              </p>
+              <p className="text-muted-foreground mb-6">
+                {Math.round((result.score / result.total_questions) * 100)}% ถูกต้อง
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button onClick={reset} variant="outline" className="flex-1">
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  ทำใหม่
+                </Button>
+                <Button onClick={() => { setCurrentIndex(0); }} className="flex-1">
+                  ดูเฉลย →
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+
+          {showExplanation && questions.map((q, i) => (
+            <QuizQuestion
+              key={i}
+              question={q}
+              index={i}
+              total={questions.length}
+              selectedAnswer={answers[i]}
+              onAnswer={() => {}}
+              showResult
+            />
+          ))}
+        </div>
+      </>
     );
   }
 

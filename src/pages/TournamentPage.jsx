@@ -95,7 +95,7 @@ export default function TournamentPage() {
           {currentIndex < activeTournament.questions.length - 1 ? (
             <Button onClick={() => setCurrentIndex(currentIndex + 1)}>ถัดไป →</Button>
           ) : (
-            <Button onClick={submitTournament} disabled={answers.includes(-1)} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+            <Button onClick={submitTournament} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
               <CheckCircle className="w-4 h-4 mr-2" /> ส่งคำตอบ
             </Button>
           )}

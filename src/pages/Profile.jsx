@@ -12,7 +12,7 @@ import { User, Save, Crown, Zap, BookOpen, Trophy, CheckCircle, Loader2 } from "
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 
-const gradeOptions = ["ม.4", "ม.5", "ม.6"];
+const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
 const subjectOptions = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
 export default function Profile() {
@@ -158,6 +158,25 @@ export default function Profile() {
           </Button>
         </div>
       </Card>
+
+      {/* Subject Levels */}
+      {user?.subject_levels && Object.keys(user.subject_levels).length > 0 && (
+        <Card className="p-6 border-0 shadow-md">
+          <h3 className="font-heading font-semibold mb-3">เลเวลตามวิชา</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {subjectOptions.map(s => {
+              const lv = user.subject_levels[s];
+              if (!lv) return null;
+              return (
+                <div key={s} className="flex items-center justify-between p-2 bg-secondary/30 rounded-lg">
+                  <span className="text-sm">{s}</span>
+                  <Badge variant="secondary">Lv.{lv}</Badge>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4">

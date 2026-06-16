@@ -6,16 +6,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Zap, Crown, CheckCircle, QrCode, Wallet, Loader2, Gift, ExternalLink, X } from "lucide-react";
+import { CreditCard, Zap, Crown, CheckCircle, QrCode, Wallet, Loader2, Gift, ExternalLink, Sparkles, BrainCircuit, TrendingUp, FileText, CalendarCheck, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 
-// ============================================================
-// ⚙️  ตั้งค่าการชำระเงินจริง — แก้ค่าเหล่านี้
-// ============================================================
-const PROMPTPAY_NUMBER = "0812345678"; // เบอร์ PromptPay หรือ เลขบัตรประชาชน
-const TRUEWALLET_LINK  = "https://gift.truemoney.com/campaign/?v=XXXXXXXXXX"; // ลิงก์ True Wallet ของคุณ
-// ============================================================
+const PROMPTPAY_NUMBER = "0812345678";
+const TRUEWALLET_LINK = "https://gift.truemoney.com/campaign/?v=XXXXXXXXXX";
 
 const tokenPackages = [
   {
@@ -50,14 +46,12 @@ const tokenPackages = [
   },
 ];
 
-const premiumPrice = 299;
+const premiumPrice = 109;
 
-// Generate PromptPay QR URL via promptpay.io
 function getPromptPayQR(phone, amount) {
   return `https://promptpay.io/${phone.replace(/-/g, "")}/${amount}.png`;
 }
 
-// Auto-close timer component
 function CountdownClose({ seconds, onClose }) {
   const [left, setLeft] = useState(seconds);
   useEffect(() => {
@@ -91,7 +85,7 @@ export default function Tokens() {
   };
 
   const handlePremium = () => {
-    setSelectedPackage({ tokens: 200, price: premiumPrice, label: "Premium" });
+    setSelectedPackage({ tokens: 200, price: premiumPrice, label: "AI Pro" });
     setIsPremiumPurchase(true);
     setPaid(false);
     setShowPayment(true);
@@ -122,7 +116,6 @@ export default function Tokens() {
   return (
     <div className="space-y-8 max-w-2xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        {/* Balance Card */}
         <Card className="p-6 border-0 shadow-xl bg-gradient-to-br from-primary via-primary/90 to-accent text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="w-64 h-64 rounded-full bg-white absolute -top-20 -right-20" />
@@ -153,40 +146,62 @@ export default function Tokens() {
         </Card>
       </motion.div>
 
-      {/* Premium */}
-      {!user?.is_premium && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="p-6 border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 relative overflow-hidden shadow-lg">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/30 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <Crown className="w-6 h-6 text-amber-600" />
-                <h2 className="text-xl font-display font-bold text-amber-900">AI Tutor Pro</h2>
-                <Badge className="bg-amber-500 text-white text-xs ml-auto">ยอดนิยม</Badge>
+      {/* ========== AI PRO SECTION ========== */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <div className="flex items-center gap-2 mb-1">
+          <Crown className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-display font-bold">AI Pro</h2>
+          <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs">พรีเมียม</Badge>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">ยกระดับการเรียนของคุณด้วย AI ระดับโปร</p>
+
+        <Card className="p-0 border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden shadow-xl">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-amber-200/30 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-200/20 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="relative z-10 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {["ได้รับ 200 Tokens ทันที", "ข้อสอบระดับสูงพิเศษ", "วิเคราะห์ผลละเอียด", "ไม่มีโฆษณา"].map((item, i) => (
-                  <div key={i} className="flex items-center gap-1.5 text-sm text-amber-800">
-                    <CheckCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-                    {item}
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-display font-black text-amber-900">฿{premiumPrice}</p>
-                  <p className="text-xs text-amber-600">/เดือน</p>
-                </div>
-                <Button onClick={handlePremium} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">
-                  อัปเกรดเลย →
-                </Button>
+              <div>
+                <h3 className="text-xl font-display font-bold text-amber-900">AI Pro</h3>
+                <p className="text-sm text-amber-700">แผนรายเดือน — ยกเลิกเมื่อไหร่ก็ได้</p>
               </div>
             </div>
-          </Card>
-        </motion.div>
-      )}
 
-      {/* Token Packages */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
+              {[
+                { icon: BrainCircuit, text: "AI ประสิทธิภาพสูง — ตอบเร็วกว่า 3 เท่า" },
+                { icon: FileText, text: "คำอธิบายละเอียดและแม่นยำกว่า" },
+                { icon: TrendingUp, text: "ข้อสอบขั้นสูงพิเศษเฉพาะคุณ" },
+                { icon: Sparkles, text: "วิเคราะห์การเรียนรู้เชิงลึก" },
+                { icon: CalendarCheck, text: "แผนการเรียนส่วนตัวรายสัปดาห์" },
+                { icon: FileText, text: "รายงานความก้าวหน้ารายสัปดาห์" },
+                { icon: Clock, text: "ลำดับความสำคัญในการตอบสูงสุด" },
+                { icon: Zap, text: "ได้รับ 200 Tokens ทันที" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-2 text-sm text-amber-800">
+                  <item.icon className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <span>{item.text}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between bg-white/60 rounded-2xl p-4">
+              <div>
+                <p className="text-3xl font-display font-black text-amber-900">฿{premiumPrice}</p>
+                <p className="text-xs text-amber-600">/เดือน</p>
+              </div>
+              <Button onClick={handlePremium} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all">
+                <Crown className="w-4 h-4 mr-2" />
+                อัปเกรดเป็น AI Pro
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* ========== TOKEN PACKAGES ========== */}
       <div>
         <h2 className="text-lg font-heading font-bold mb-4">แพ็คเกจ Token</h2>
         <div className="grid grid-cols-1 gap-4">
@@ -227,7 +242,7 @@ export default function Tokens() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-center">
-              {paid ? "✅ ชำระเงินสำเร็จ!" : isPremiumPurchase ? "อัปเกรด Premium" : "ชำระเงิน"}
+              {paid ? "✅ ชำระเงินสำเร็จ!" : isPremiumPurchase ? "อัปเกรด AI Pro" : "ชำระเงิน"}
             </DialogTitle>
           </DialogHeader>
 
@@ -237,13 +252,14 @@ export default function Tokens() {
                 <CheckCircle className="w-8 h-8 text-green-500" />
               </div>
               <p className="font-heading font-bold text-lg">+{selectedPackage?.tokens} Tokens</p>
+              {isPremiumPurchase && <p className="text-sm text-amber-600">🎉 ยินดีด้วย! คุณเป็น AI Pro แล้ว</p>}
               <p className="text-sm text-muted-foreground">เพิ่ม Token เรียบร้อยแล้ว</p>
               <CountdownClose seconds={3} onClose={closeDialog} />
             </div>
           ) : (
             <div className="space-y-4">
               <div className="text-center p-4 bg-secondary/50 rounded-xl">
-                <p className="text-sm text-muted-foreground">{isPremiumPurchase ? "Premium + 200 Tokens" : `${selectedPackage?.tokens} Tokens`}</p>
+                <p className="text-sm text-muted-foreground">{isPremiumPurchase ? "AI Pro + 200 Tokens" : `${selectedPackage?.tokens} Tokens`}</p>
                 <p className="text-4xl font-display font-black mt-1">฿{selectedPackage?.price}</p>
               </div>
 

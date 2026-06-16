@@ -20,6 +20,7 @@ import Battle from '@/pages/Battle';
 import TournamentPage from '@/pages/TournamentPage';
 import Tokens from '@/pages/Tokens';
 import Profile from '@/pages/Profile';
+import ClassesPage from '@/pages/ClassesPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -61,6 +62,7 @@ const AuthenticatedApp = () => {
           <Route path="/tournament" element={<TournamentPage />} />
           <Route path="/tokens" element={<Tokens />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/classes" element={<ClassesPage />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

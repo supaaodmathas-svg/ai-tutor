@@ -35,10 +35,9 @@ export default function Battle() {
   const [joining, setJoining] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Poll for battle updates when waiting or playing
-  const shouldPoll = view === "waiting" || (view === "playing" && submitted);
+  // Poll for battle updates — always poll when waiting or playing
   useEffect(() => {
-    if (!activeBattle?.id || !shouldPoll) return;
+    if (!activeBattle?.id || (view !== "waiting" && view !== "playing")) return;
     const interval = setInterval(async () => {
       const updated = await base44.entities.QuizBattle.filter({ id: activeBattle.id });
       if (updated && updated[0]) {
@@ -49,6 +48,7 @@ export default function Battle() {
           setView("playing");
           setAnswers(new Array(b.questions.length).fill(-1));
           setCurrentIndex(0);
+          setSubmitted(false);
         }
         // Both submitted => show result
         if (b.status === "completed") {
@@ -58,7 +58,7 @@ export default function Battle() {
       }
     }, 2000);
     return () => clearInterval(interval);
-  }, [activeBattle?.id, shouldPoll, view]);
+  }, [activeBattle?.id, view]);
 
   const { data: myBattles = [] } = useQuery({
     queryKey: ["my-battles", user?.id],
@@ -81,7 +81,7 @@ export default function Battle() {
     setCreating(true);
     const roomCode = generateRoomCode();
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `สร้างข้อสอบแข่งขันวิชา ${subject} จำนวน 5 ข้อ ระดับปานกลาง-ยาก สำหรับมัธยมปลาย ภาษาไทย แต่ละข้อมี 4 ตัวเลือก ห้ามมี prefix A. B. C. D. ในตัวเลือก`,
+      prompt: `สร้างข้อสอบแข่งขันวิชา ${subject} จำนวน 5 ข้อ ระดับปานกลาง-ยาก สำหรับมัธยมต้นและมัธยมปลาย (ม.1-6) ภาษาไทย แต่ละข้อมี 4 ตัวเลือก ห้ามมี prefix A. B. C. D. ในตัวเลือก`,
       response_json_schema: {
         type: "object",
         properties: {
@@ -154,26 +154,30 @@ export default function Battle() {
   };
 
   const submitBattle = async () => {
-    const score = activeBattle.questions.reduce(
+    // ดึงข้อมูลล่าสุดจาก DB ก่อน เพื่อให้แน่ใจว่าเห็นคำตอบของคู่แข่ง
+    const freshData = await base44.entities.QuizBattle.filter({ id: activeBattle.id });
+    const latest = freshData && freshData[0] ? freshData[0] : activeBattle;
+
+    const score = latest.questions.reduce(
       (acc, q, i) => acc + (answers[i] === q.correct_answer ? 1 : 0), 0
     );
-    const isChallenger = activeBattle.challenger_id === user?.id;
+    const isChallenger = latest.challenger_id === user?.id;
     const updateData = isChallenger
       ? { challenger_answers: answers, challenger_score: score }
       : { opponent_answers: answers, opponent_score: score };
 
     const otherAnswered = isChallenger
-      ? activeBattle.opponent_answers?.length > 0
-      : activeBattle.challenger_answers?.length > 0;
+      ? (latest.opponent_answers?.length || 0) > 0
+      : (latest.challenger_answers?.length || 0) > 0;
 
     if (otherAnswered) {
-      const otherScore = isChallenger ? activeBattle.opponent_score : activeBattle.challenger_score;
-      const winnerId = score > otherScore ? user.id : score < otherScore ? (isChallenger ? activeBattle.opponent_id : activeBattle.challenger_id) : "draw";
+      const otherScore = isChallenger ? (latest.opponent_score ?? 0) : (latest.challenger_score ?? 0);
+      const winnerId = score > otherScore ? user.id : score < otherScore ? (isChallenger ? latest.opponent_id : latest.challenger_id) : "draw";
       updateData.status = "completed";
       updateData.winner_id = winnerId;
     }
 
-    await base44.entities.QuizBattle.update(activeBattle.id, updateData);
+    await base44.entities.QuizBattle.update(latest.id, updateData);
     setActiveBattle(prev => ({ ...prev, ...updateData }));
     setSubmitted(true);
     if (updateData.status === "completed") {
@@ -278,7 +282,7 @@ export default function Battle() {
           {currentIndex < activeBattle.questions.length - 1 ? (
             <Button onClick={() => setCurrentIndex(currentIndex + 1)}>ถัดไป →</Button>
           ) : (
-            <Button onClick={submitBattle} disabled={answers.includes(-1)} className="bg-gradient-to-r from-primary to-accent">
+            <Button onClick={submitBattle} className="bg-gradient-to-r from-primary to-accent">
               <CheckCircle className="w-4 h-4 mr-2" /> ส่งคำตอบ
             </Button>
           )}
