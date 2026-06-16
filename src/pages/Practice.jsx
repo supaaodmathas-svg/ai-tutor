@@ -16,24 +16,12 @@ import { useToast } from "@/components/ui/use-toast";
 const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
 
-const subjectTopics = {
-  "คณิตศาสตร์ 1": ["เซต", "ตรรกศาสตร์", "จำนวนจริง", "ความสัมพันธ์และฟังก์ชัน", "เรขาคณิตวิเคราะห์", "เมทริกซ์", "ภาคตัดกรวย"],
-  "คณิตศาสตร์ 2": ["ฟังก์ชันเอกซ์โพเนนเชียล", "ฟังก์ชันลอการิทึม", "ตรีโกณมิติ", "เวกเตอร์", "จำนวนเชิงซ้อน", "ความน่าจะเป็น", "สถิติ"],
-  "ฟิสิกส์": ["กลศาสตร์", "คลื่น", "ไฟฟ้าและแม่เหล็ก", "ความร้อน", "แสง", "เสียง", "ฟิสิกส์นิวเคลียร์"],
-  "เคมี": ["โครงสร้างอะตอม", "พันธะเคมี", "ปริมาณสารสัมพันธ์", "กรด-เบส", "เคมีอินทรีย์", "ไฟฟ้าเคมี", "แก๊ส"],
-  "ชีววิทยา": ["เซลล์", "การสังเคราะห์ด้วยแสง", "พันธุศาสตร์", "ระบบนิเวศ", "วิวัฒนาการ", "ระบบร่างกาย", "การจำแนกสิ่งมีชีวิต"],
-  "ภาษาอังกฤษ": ["Grammar", "Vocabulary", "Reading Comprehension", "Writing", "Error Detection", "Conversation", "Cloze Test"],
-  "ภาษาไทย": ["หลักภาษา", "วรรณคดี", "การอ่านจับใจความ", "การเขียน", "คำราชาศัพท์", "สำนวนไทย", "โวหาร"],
-  "สังคมศึกษา": ["ประวัติศาสตร์", "ภูมิศาสตร์", "เศรษฐศาสตร์", "หน้าที่พลเมือง", "ศาสนา", "กฎหมาย", "อาเซียน"],
-};
-
 export default function Practice() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
   const [numQuestions, setNumQuestions] = useState("5");
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
@@ -83,15 +71,14 @@ export default function Practice() {
     await base44.auth.updateMe({ tokens: (user?.tokens ?? 0) - tokenCost });
 
     const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
-    const topicText = selectedTopic ? ` เนื้อหาเฉพาะเรื่อง: ${selectedTopic}` : "";
 
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText}${topicText} จำนวน ${count} ข้อพอดี ห้ามสร้างมากกว่าหรือน้อยกว่า ${count} ข้อ
-ระดับความยาก: ${level}/5 (Adaptive Learning)
-- ข้อสอบต้องเน้นเนื้อหาตามหัวข้อที่ระบุ
-- แต่ละข้อมี 4 ตัวเลือก (choices มี 4 รายการเสมอ)
-- correct_answer คือ index 0-3
-- เนื้อหาเป็นภาษาไทย ตรงหลักสูตร`,
+      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} จำนวน ${count} ข้อพอดี ห้ามสร้างมากกว่าหรือน้อยกว่า ${count} ข้อ
+    ระดับความยาก: ${level}/5 (Adaptive Learning)
+    - ข้อสอบต้องตรงตามหลักสูตรชั้น ${gradeText}
+    - แต่ละข้อมี 4 ตัวเลือก (choices มี 4 รายการเสมอ)
+    - correct_answer คือ index 0-3
+    - เนื้อหาเป็นภาษาไทย ตรงหลักสูตร`,
       response_json_schema: {
         type: "object",
         properties: {
@@ -176,7 +163,6 @@ export default function Practice() {
   const reset = () => {
     setSelectedSubject(null);
     setSelectedGrade("");
-    setSelectedTopic("");
     setQuestions([]);
     setResult(null);
     setShowExplanation(false);
@@ -233,7 +219,6 @@ export default function Practice() {
   }
 
   if (questions.length === 0) {
-    const topics = subjectTopics[selectedSubject] || [];
     return (
       <div className="max-w-md mx-auto space-y-6">
         <Card className="p-6 border-0 shadow-lg">
@@ -243,24 +228,10 @@ export default function Practice() {
               <label className="text-sm font-medium mb-2 block">ระดับชั้น</label>
               <Select value={selectedGrade} onValueChange={setSelectedGrade}>
                 <SelectTrigger>
-                  <SelectValue placeholder="เลือกระดับชั้น (ทุกชั้น)" />
+                  <SelectValue placeholder="เลือกระดับชั้น" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>ทุกชั้น (ม.1-6)</SelectItem>
                   {gradeOptions.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium mb-2 block">หมวดหมู่เนื้อหา</label>
-              <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                <SelectTrigger>
-                  <SelectValue placeholder="เลือกหัวข้อ (ทุกหัวข้อ)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={null}>ทุกหัวข้อ</SelectItem>
-                  {topics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

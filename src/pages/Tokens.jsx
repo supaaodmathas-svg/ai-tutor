@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Zap, Crown, CheckCircle, QrCode, Wallet, Loader2, Gift, ExternalLink, Sparkles, BrainCircuit, TrendingUp, FileText, CalendarCheck, Clock } from "lucide-react";
+import { CreditCard, Zap, CheckCircle, QrCode, Wallet, Loader2, Gift, ExternalLink, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -136,67 +136,17 @@ export default function Tokens() {
                   <Crown className="w-3 h-3 mr-1" /> PRO
                 </Badge>
               )}
+              {!user?.is_premium && (
+                <Button onClick={handlePremium} size="sm" variant="outline" className="border-amber-400/40 text-amber-200 hover:bg-white/10 text-xs h-7">
+                  <Crown className="w-3 h-3 mr-1" /> AI Pro
+                </Button>
+              )}
             </div>
           </div>
           <div className="relative z-10 mt-4 pt-4 border-t border-white/20 grid grid-cols-3 gap-4 text-center text-xs">
             <div><p className="opacity-60">ฝึกข้อสอบ</p><p className="font-bold">10/ข้อ</p></div>
             <div><p className="opacity-60">Quiz Battle</p><p className="font-bold">5 Tokens</p></div>
             <div><p className="opacity-60">Tournament</p><p className="font-bold">10 Tokens</p></div>
-          </div>
-        </Card>
-      </motion.div>
-
-      {/* ========== AI PRO SECTION ========== */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <div className="flex items-center gap-2 mb-1">
-          <Crown className="w-5 h-5 text-amber-500" />
-          <h2 className="text-lg font-display font-bold">AI Pro</h2>
-          <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs">พรีเมียม</Badge>
-        </div>
-        <p className="text-sm text-muted-foreground mb-4">ยกระดับการเรียนของคุณด้วย AI ระดับโปร</p>
-
-        <Card className="p-0 border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden shadow-xl">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-amber-200/30 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-200/20 rounded-full translate-y-1/2 -translate-x-1/2" />
-          <div className="relative z-10 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-display font-bold text-amber-900">AI Pro</h3>
-                <p className="text-sm text-amber-700">แผนรายเดือน — ยกเลิกเมื่อไหร่ก็ได้</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
-              {[
-                { icon: BrainCircuit, text: "AI ประสิทธิภาพสูง — ตอบเร็วกว่า 3 เท่า" },
-                { icon: FileText, text: "คำอธิบายละเอียดและแม่นยำกว่า" },
-                { icon: TrendingUp, text: "ข้อสอบขั้นสูงพิเศษเฉพาะคุณ" },
-                { icon: Sparkles, text: "วิเคราะห์การเรียนรู้เชิงลึก" },
-                { icon: CalendarCheck, text: "แผนการเรียนส่วนตัวรายสัปดาห์" },
-                { icon: FileText, text: "รายงานความก้าวหน้ารายสัปดาห์" },
-                { icon: Clock, text: "ลำดับความสำคัญในการตอบสูงสุด" },
-                { icon: Zap, text: "ได้รับ 200 Tokens ทันที" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-2 text-sm text-amber-800">
-                  <item.icon className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                  <span>{item.text}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between bg-white/60 rounded-2xl p-4">
-              <div>
-                <p className="text-3xl font-display font-black text-amber-900">฿{premiumPrice}</p>
-                <p className="text-xs text-amber-600">/เดือน</p>
-              </div>
-              <Button onClick={handlePremium} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all">
-                <Crown className="w-4 h-4 mr-2" />
-                อัปเกรดเป็น AI Pro
-              </Button>
-            </div>
           </div>
         </Card>
       </motion.div>

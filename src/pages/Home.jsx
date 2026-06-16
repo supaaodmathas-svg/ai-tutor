@@ -8,9 +8,12 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen, Trophy, Zap, Crown, Swords, FlaskConical,
-  TrendingUp, Star, ArrowRight, GraduationCap
+  TrendingUp, Star, ArrowRight, GraduationCap, Sparkles,
+  BrainCircuit, FileText, CalendarCheck, Clock
 } from "lucide-react";
 import { motion } from "framer-motion";
+
+const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -29,6 +32,8 @@ export default function Home() {
     queryKey: ["placements"],
     queryFn: () => base44.entities.PlacementTest.filter({ completed: true }, "-created_date", 10),
   });
+
+  const subjectLevels = user?.subject_levels || {};
 
   const stats = {
     totalQuizzes: quizzes.length,
@@ -127,6 +132,81 @@ export default function Home() {
           </div>
         </Card>
       </motion.div>
+
+      {/* Subject Levels */}
+      {Object.keys(subjectLevels).length > 0 && (
+        <motion.div {...fadeIn} transition={{ delay: 0.15 }}>
+          <h2 className="text-lg font-heading font-bold mb-4">เลเวลตามรายวิชา</h2>
+          <Card className="p-5 border-0 shadow-md">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {subjects.map(s => {
+                const lv = subjectLevels[s];
+                if (!lv) return null;
+                return (
+                  <div key={s} className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-secondary/60 to-secondary/20">
+                    <span className="text-sm font-medium truncate">{s}</span>
+                    <Badge variant="secondary" className="flex-shrink-0">Lv.{lv}</Badge>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* AI Pro Promotion */}
+      {!user?.is_premium && (
+        <motion.div {...fadeIn} transition={{ delay: 0.18 }}>
+          <Card className="p-0 border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden shadow-xl">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-200/30 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-200/20 rounded-full translate-y-1/2 -translate-x-1/2" />
+            <div className="relative z-10 p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-display font-bold text-amber-900">AI Pro</h3>
+                    <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs">พรีเมียม</Badge>
+                  </div>
+                  <p className="text-sm text-amber-700">ยกระดับการเรียนด้วย AI ระดับโปร</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+                {[
+                  { icon: BrainCircuit, text: "AI ตอบเร็วกว่า 3 เท่า" },
+                  { icon: FileText, text: "คำอธิบายละเอียดแม่นยำ" },
+                  { icon: TrendingUp, text: "ข้อสอบขั้นสูงเฉพาะตัว" },
+                  { icon: Sparkles, text: "วิเคราะห์เชิงลึก" },
+                  { icon: CalendarCheck, text: "แผนเรียนส่วนตัวรายสัปดาห์" },
+                  { icon: FileText, text: "รายงานความก้าวหน้า" },
+                  { icon: Clock, text: "ตอบลำดับความสำคัญสูงสุด" },
+                  { icon: Zap, text: "แถม 200 Tokens" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm text-amber-800">
+                    <item.icon className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <span>{item.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-between bg-white/60 rounded-2xl p-4 gap-4">
+                <div>
+                  <p className="text-3xl font-display font-black text-amber-900">฿109<span className="text-sm font-normal text-amber-600"> /เดือน</span></p>
+                </div>
+                <Link to="/tokens">
+                  <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all">
+                    <Crown className="w-4 h-4 mr-2" />
+                    อัปเกรดเป็น AI Pro
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Quick Actions */}
       <motion.div {...fadeIn} transition={{ delay: 0.2 }}>

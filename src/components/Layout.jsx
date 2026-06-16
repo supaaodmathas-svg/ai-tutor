@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Home, BookOpen, Trophy, CreditCard, User, LogOut, Menu, X,
-  Zap, Crown, GraduationCap, Swords, FlaskConical, Presentation } from
+  Zap, Crown, GraduationCap, Swords, FlaskConical } from
 "lucide-react";
 
 const navItems = [
@@ -16,7 +16,6 @@ const navItems = [
 { path: "/battle", label: "แข่งขัน", icon: Swords },
 { path: "/tournament", label: "Tournament", icon: Trophy },
 { path: "/tokens", label: "เติม Token", icon: CreditCard },
-{ path: "/classes", label: "คลาสเรียน", icon: Presentation },
 { path: "/profile", label: "โปรไฟล์", icon: User }];
 
 
