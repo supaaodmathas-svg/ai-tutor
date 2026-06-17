@@ -54,7 +54,7 @@ export default function Layout() {
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="font-display text-lg font-bold">Iknow</h1>
+              <h1 className="font-display text-lg font-bold">AI Tutor</h1>
               <p className="text-xs text-muted-foreground">เรียนรู้อัจฉริยะ</p>
             </div>
           </Link>
