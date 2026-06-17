@@ -31,6 +31,12 @@ export default function Practice() {
   const [showExplanation, setShowExplanation] = useState(false);
   const [levelUp, setLevelUp] = useState(null);
 
+  const { data: currentUser } = useQuery({
+    queryKey: ["current-user-practice"],
+    queryFn: () => base44.auth.me(),
+    refetchOnWindowFocus: true,
+  });
+
   const { data: placements = [] } = useQuery({
     queryKey: ["my-placements-practice"],
     queryFn: () => base44.entities.PlacementTest.filter({ completed: true }),
@@ -59,7 +65,8 @@ export default function Practice() {
   const startQuiz = async () => {
     const count = parseInt(numQuestions);
     const tokenCost = count * 10;
-    if ((user?.tokens ?? 0) < tokenCost) {
+    const currentTokens = currentUser?.tokens ?? user?.tokens ?? 0;
+    if (currentTokens < tokenCost) {
       toast({ title: "⚠️ Token ไม่เพียงพอ", description: `ต้องใช้ ${tokenCost} Tokens กรุณาเติม Token ก่อน`, variant: "destructive" });
       setTimeout(() => { window.location.href = "/tokens"; }, 2000);
       return;
@@ -68,7 +75,8 @@ export default function Practice() {
     setLoading(true);
     const level = getAdaptiveLevel(selectedSubject);
 
-    await base44.auth.updateMe({ tokens: (user?.tokens ?? 0) - tokenCost });
+    await base44.auth.updateMe({ tokens: currentTokens - tokenCost });
+    queryClient.invalidateQueries({ queryKey: ["current-user-practice"] });
 
     const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
 
@@ -260,8 +268,8 @@ export default function Practice() {
               </div>
               <div className="flex items-center justify-between">
                 <span>Token คงเหลือ</span>
-                <Badge variant={((user?.tokens ?? 0) >= parseInt(numQuestions) * 10) ? "secondary" : "destructive"}>
-                  {user?.tokens ?? 0} Tokens
+                <Badge variant={((currentUser?.tokens ?? user?.tokens ?? 0) >= parseInt(numQuestions) * 10) ? "secondary" : "destructive"}>
+                  {currentUser?.tokens ?? user?.tokens ?? 0} Tokens
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground">ราคา 10 Tokens ต่อ 1 ข้อ</p>
