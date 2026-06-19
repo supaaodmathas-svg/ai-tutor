@@ -362,19 +362,26 @@ export default function Practice() {
                     );
                   })}
                 </div>
-                <div className="flex items-center gap-3 mt-2">
-                  {selectedTopics.length > 0 && (
-                    <button onClick={() => setSelectedTopics([])} className="text-xs text-muted-foreground underline">
-                      ล้างการเลือก
-                    </button>
-                  )}
+                <div className="flex items-center gap-2 flex-wrap mt-2">
+                  <button
+                    onClick={() => setSelectedTopics([...availableTopics])}
+                    className="text-xs text-primary font-semibold hover:underline"
+                  >
+                    ✓ รวมทุกเนื้อหา
+                  </button>
+                  <button
+                    onClick={() => setSelectedTopics([])}
+                    className="text-xs text-muted-foreground hover:underline"
+                  >
+                    ✕ กระจายเนื้อเรื่อง
+                  </button>
                   <button
                     onClick={() => {
                       const count = Math.floor(Math.random() * Math.min(3, availableTopics.length)) + 1;
                       const shuffled = [...availableTopics].sort(() => Math.random() - 0.5);
                       setSelectedTopics(shuffled.slice(0, count));
                     }}
-                    className="text-xs text-primary font-semibold flex items-center gap-1 hover:underline"
+                    className="text-xs text-primary font-semibold hover:underline"
                   >
                     🎲 สุ่มเนื้อหา
                   </button>
