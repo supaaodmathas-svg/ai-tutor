@@ -119,12 +119,13 @@ export default function Practice() {
 
     const res = await base44.integrations.Core.InvokeLLM({
       model: "gemini_3_1_pro",
-      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} ${topicText} จำนวน ${count} ข้อ
-คุณต้องสร้างครบ ${count} ข้อเท่านั้น ไม่มากไม่น้อย
+      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} ${topicText}
+จำนวนข้อสอบ: ${count} ข้อ (ต้องเท่ากับ ${count} พอดี ห้ามมากกว่าหรือน้อยกว่า)
 ระดับความยาก: ${level}/5
 
-กฎสำคัญ:
-- สร้างข้อสอบให้ครบ ${count} ข้อเสมอ
+กฎเข้มงวด:
+- ส่งกลับ questions array ที่มีสมาชิก ${count} รายการพอดี ไม่มากไม่น้อย
+- ห้ามส่ง ${count + 1} ข้อหรือมากกว่า
 - ข้อสอบต้องเกี่ยวกับ${topicText || gradeText}เท่านั้น
 - แต่ละข้อมี choices อาร์เรย์ 4 รายการเสมอ (ไม่ใช่ 3 หรือ 5)
 - correct_answer คือ index 0, 1, 2, หรือ 3 เท่านั้น
@@ -135,12 +136,14 @@ export default function Practice() {
         properties: {
           questions: {
             type: "array",
+            minItems: count,
+            maxItems: count,
             items: {
               type: "object",
               properties: {
                 level: { type: "number" },
                 question: { type: "string" },
-                choices: { type: "array", items: { type: "string" } },
+                choices: { type: "array", minItems: 4, maxItems: 4, items: { type: "string" } },
                 correct_answer: { type: "number" },
                 explanation: { type: "string" }
               }
@@ -151,6 +154,7 @@ export default function Practice() {
       add_context_from_internet: true,
     });
 
+    // Hard cap: ห้ามเกินจำนวนที่ผู้ใช้เลือก
     const fetchedQuestions = (res.questions || []).slice(0, count);
 
     // Save quiz for later retake (free)
