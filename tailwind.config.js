@@ -62,9 +62,9 @@ module.exports = {
   			}
   		},
   		fontFamily: {
-  			heading: ['var(--font-heading)', 'Space Grotesk', 'sans-serif'],
-  			body: ['var(--font-body)', 'Inter', 'sans-serif'],
-  			display: ['var(--font-display)', 'Space Grotesk', 'sans-serif'],
+  			heading: ['var(--font-heading)', 'Nunito', 'sans-serif'],
+  			body: ['var(--font-body)', 'Nunito', 'sans-serif'],
+  			display: ['var(--font-display)', 'Prompt', 'sans-serif'],
   			mono: ['var(--font-mono)']
   		},
   		keyframes: {
