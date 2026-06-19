@@ -105,12 +105,17 @@ export default function Practice() {
     const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
 
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} จำนวน ${count} ข้อพอดี ห้ามสร้างมากกว่าหรือน้อยกว่า ${count} ข้อ
-    ระดับความยาก: ${level}/5 (Adaptive Learning)
-    - ข้อสอบต้องตรงตามหลักสูตรชั้น ${gradeText}
-    - แต่ละข้อมี 4 ตัวเลือก (choices มี 4 รายการเสมอ)
-    - correct_answer คือ index 0-3
-    - เนื้อหาเป็นภาษาไทย ตรงหลักสูตร`,
+      model: "gemini_3_1_pro",
+      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} จำนวน ${count} ข้อ
+คุณต้องสร้างครบ ${count} ข้อเท่านั้น ไม่มากไม่น้อย
+ระดับความยาก: ${level}/5
+
+กฎสำคัญ:
+- สร้างข้อสอบให้ครบ ${count} ข้อเสมอ
+- แต่ละข้อมี choices อาร์เรย์ 4 รายการเสมอ (ไม่ใช่ 3 หรือ 5)
+- correct_answer คือ index 0, 1, 2, หรือ 3 เท่านั้น
+- เนื้อหาภาษาไทย ตรงหลักสูตร ${gradeText}
+- explanation อธิบายเฉลยแต่ละข้อ`,
       response_json_schema: {
         type: "object",
         properties: {
