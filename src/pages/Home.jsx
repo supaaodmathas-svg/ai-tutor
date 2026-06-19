@@ -45,6 +45,13 @@ export default function Home() {
     ? Math.round(quizzes.reduce((a, q) => a + ((q.score / q.total_questions) * 100), 0) / quizzes.length)
     : null;
 
+  // Calculate average score per subject
+  const getSubjectAvgScore = (subject) => {
+    const subjectQuizzes = quizzes.filter(q => q.subject === subject);
+    if (subjectQuizzes.length === 0) return null;
+    return Math.round(subjectQuizzes.reduce((a, q) => a + ((q.score / q.total_questions) * 100), 0) / subjectQuizzes.length);
+  };
+
   return (
     <div className="space-y-6 pb-10">
       {showDailyReward && <DailyLoginReward onClose={() => setShowDailyReward(false)} />}
@@ -142,10 +149,16 @@ export default function Home() {
           <div className="bg-card rounded-3xl border-2 border-border shadow-sm divide-y divide-border">
             {subjects.map(s => {
               const lv = subjectLevels[s];
+              const subjectAvg = getSubjectAvgScore(s);
               if (!lv) return null;
               return (
                 <div key={s} className="flex items-center justify-between px-5 py-3">
-                  <span className="text-sm font-semibold text-foreground">{s}</span>
+                  <div>
+                    <span className="text-sm font-semibold text-foreground">{s}</span>
+                    {subjectAvg !== null && (
+                      <p className="text-xs text-muted-foreground">คะแนนเฉลี่ย: {subjectAvg}%</p>
+                    )}
+                  </div>
                   <span className="text-sm font-bold text-primary bg-secondary px-3 py-0.5 rounded-full">Lv.{lv} ⭐</span>
                 </div>
               );
