@@ -511,15 +511,15 @@ export default function Practice() {
           {studyGuide && (
             <div className="space-y-4">
               {/* Main Header */}
-              <div className="bg-teal-600 text-white rounded-2xl p-5">
+              <div className="bg-teal-600 dark:bg-teal-700 text-white rounded-2xl p-5">
                 <h3 className="font-display font-bold text-lg flex items-center gap-2">📚 แผนการแก้ไขจาก AI</h3>
               </div>
 
               {/* Overview */}
               {studyGuide.overall_advice && (
-                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-                  <div className="bg-teal-100 p-4 border-b border-gray-200">
-                    <p className="text-sm font-bold text-teal-700">🎯 ภาพรวม</p>
+                <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
+                  <div className="bg-teal-100 dark:bg-teal-900/30 p-4 border-b border-gray-200 dark:border-border">
+                    <p className="text-sm font-bold text-teal-700 dark:text-teal-400">🎯 ภาพรวม</p>
                   </div>
                   <div className="p-5">
                     <p className="text-sm text-foreground">{studyGuide.overall_advice}</p>
@@ -531,14 +531,14 @@ export default function Practice() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Topics to Review */}
                 {studyGuide.topics_to_review?.length > 0 && (
-                  <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-                    <div className="bg-teal-100 p-4 border-b border-gray-200">
-                      <p className="text-sm font-bold text-teal-700">📖 บทที่ควรทบทวน</p>
+                  <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
+                    <div className="bg-teal-100 dark:bg-teal-900/30 p-4 border-b border-gray-200 dark:border-border">
+                      <p className="text-sm font-bold text-teal-700 dark:text-teal-400">📖 บทที่ควรทบทวน</p>
                     </div>
                     <div className="p-5 space-y-2">
                       {studyGuide.topics_to_review.map((t, i) => (
                         <div key={i} className="flex gap-2 text-sm">
-                          <span className="text-teal-600 font-bold">•</span>
+                          <span className="text-teal-600 dark:text-teal-400 font-bold">•</span>
                           <span className="text-foreground">{t}</span>
                         </div>
                       ))}
@@ -548,14 +548,14 @@ export default function Practice() {
 
                 {/* Study Tips */}
                 {studyGuide.study_tips?.length > 0 && (
-                  <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-                    <div className="bg-teal-100 p-4 border-b border-gray-200">
-                      <p className="text-sm font-bold text-teal-700">💡 เคล็ดลับการจำ</p>
+                  <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
+                    <div className="bg-teal-100 dark:bg-teal-900/30 p-4 border-b border-gray-200 dark:border-border">
+                      <p className="text-sm font-bold text-teal-700 dark:text-teal-400">💡 เคล็ดลับการจำ</p>
                     </div>
                     <div className="p-5 space-y-2">
                       {studyGuide.study_tips.map((tip, i) => (
                         <div key={i} className="flex gap-2 text-sm">
-                          <span className="text-teal-600 font-bold">•</span>
+                          <span className="text-teal-600 dark:text-teal-400 font-bold">•</span>
                           <span className="text-foreground">{tip}</span>
                         </div>
                       ))}
@@ -566,23 +566,23 @@ export default function Practice() {
 
               {/* Wrong Questions (Expandable) */}
               {studyGuide.per_question?.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
                   <details className="group">
-                    <summary className="bg-red-50 p-5 cursor-pointer flex items-center justify-between border-b border-gray-200 hover:bg-red-100 transition">
-                      <p className="text-sm font-bold text-red-600 flex items-center gap-2">
+                    <summary className="bg-red-50 dark:bg-red-900/20 p-5 cursor-pointer flex items-center justify-between border-b border-gray-200 dark:border-border hover:bg-red-100 dark:hover:bg-red-900/30 transition">
+                      <p className="text-sm font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
                         ❌ ข้อที่ทำผิด
                       </p>
-                      <svg className="w-5 h-5 text-red-600 transform group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-red-600 dark:text-red-400 transform group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
                     </summary>
                     <div className="p-5 space-y-4">
                       {studyGuide.per_question.map((pq, i) => (
-                        <div key={i} className="border-l-4 border-red-400 pl-4 py-2">
-                          <p className="text-xs font-bold text-red-600 mb-1">{pq.question_summary}</p>
+                        <div key={i} className="border-l-4 border-red-400 dark:border-red-600 pl-4 py-2">
+                          <p className="text-xs font-bold text-red-600 dark:text-red-400 mb-1">{pq.question_summary}</p>
                           <p className="text-sm text-foreground mb-2">{pq.fix_advice}</p>
                           {pq.chapter_to_read && (
-                            <p className="text-xs text-teal-600 font-semibold">📗 {pq.chapter_to_read}</p>
+                            <p className="text-xs text-teal-600 dark:text-teal-400 font-semibold">📗 {pq.chapter_to_read}</p>
                           )}
                         </div>
                       ))}
