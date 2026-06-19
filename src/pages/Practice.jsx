@@ -154,7 +154,6 @@ export default function Practice() {
           }
         }
       },
-      add_context_from_internet: true,
     });
 
     // Hard cap: ห้ามเกินจำนวนที่ผู้ใช้เลือก
