@@ -9,7 +9,7 @@ import DailyLoginReward from "@/components/DailyLoginReward";
 const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
 const quickLinks = [
-  { to: "/subjects", label: "วัดระดับความรู้", sub: "Placement Test ฟรี!", emoji: "📝" },
+  { to: "/subjects", label: "ทดสอบวัดระดับตัวเอง", sub: "Placement Test ฟรี!", emoji: "📝" },
   { to: "/practice", label: "ฝึกทำข้อสอบ", sub: "AI สร้างข้อสอบให้", emoji: "✏️" },
   { to: "/battle", label: "Quiz Battle", sub: "ท้าเพื่อนแข่ง", emoji: "⚔️" },
   { to: "/tournament", label: "Tournament", sub: "แข่งชิงอันดับ", emoji: "🏆" },
