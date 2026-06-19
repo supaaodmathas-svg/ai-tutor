@@ -362,11 +362,23 @@ export default function Practice() {
                     );
                   })}
                 </div>
-                {selectedTopics.length > 0 && (
-                  <button onClick={() => setSelectedTopics([])} className="text-xs text-muted-foreground underline mt-1">
-                    ล้างการเลือก
+                <div className="flex items-center gap-3 mt-2">
+                  {selectedTopics.length > 0 && (
+                    <button onClick={() => setSelectedTopics([])} className="text-xs text-muted-foreground underline">
+                      ล้างการเลือก
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      const count = Math.floor(Math.random() * Math.min(3, availableTopics.length)) + 1;
+                      const shuffled = [...availableTopics].sort(() => Math.random() - 0.5);
+                      setSelectedTopics(shuffled.slice(0, count));
+                    }}
+                    className="text-xs text-primary font-semibold flex items-center gap-1 hover:underline"
+                  >
+                    🎲 สุ่มเนื้อหา
                   </button>
-                )}
+                </div>
               </div>
             )}
 
