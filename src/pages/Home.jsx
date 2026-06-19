@@ -122,13 +122,15 @@ export default function Home() {
 
       {/* AI Pro Upgrade */}
       {!user?.is_premium && (
-        <div className="bg-white rounded-3xl border-2 border-pink-200 p-5 shadow-sm relative overflow-hidden">
-          <div className="absolute top-3 right-4 text-2xl">✨</div>
-          <p className="font-bold text-base mb-1">🌈 AI Pro</p>
-          <p className="text-xs text-muted-foreground mb-1">คำอธิบายละเอียด · แผนเรียนส่วนตัว</p>
-          <p className="text-lg font-display font-bold text-primary mb-3">฿109 <span className="text-xs font-normal text-muted-foreground">/เดือน</span></p>
+        <div className="rounded-2xl p-5 relative overflow-hidden" style={{background: "#0f172a", border: "1.5px solid #a855f7", boxShadow: "0 0 24px rgba(168,85,247,0.5), inset 0 0 24px rgba(168,85,247,0.05)"}}>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <p className="font-display font-bold text-xl" style={{background: "linear-gradient(90deg, #818cf8, #e879f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"}}>🌈 AI Pro</p>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{background: "#134e4a", color: "#2dd4bf", border: "1px solid #0d9488"}}>BEST VALUE</span>
+          </div>
+          <p className="text-center text-sm mb-3" style={{color: "#94a3b8"}}>คำอธิบายละเอียด · แผนเรียนส่วนตัว</p>
+          <p className="text-center font-display font-bold text-3xl text-white mb-4">฿109 <span className="text-base font-normal" style={{color: "#94a3b8"}}>/เดือน</span></p>
           <Link to="/tokens">
-            <button className="bg-primary text-white text-sm font-bold px-5 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-md">
+            <button className="w-full py-3 rounded-xl font-bold text-sm transition-all" style={{background: "rgba(168,85,247,0.15)", border: "1.5px solid #a855f7", color: "#c084fc", boxShadow: "0 0 12px rgba(168,85,247,0.3)"}}>
               อัปเกรดเลย 🚀
             </button>
           </Link>
