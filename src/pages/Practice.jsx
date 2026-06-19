@@ -63,7 +63,7 @@ export default function Practice() {
 
   const { data: placements = [] } = useQuery({
     queryKey: ["my-placements-practice"],
-    queryFn: () => base44.entities.PlacementTest.filter({ completed: true }),
+    queryFn: () => base44.entities.PlacementTest.filter({ completed: true, created_by_id: user?.id }),
   });
 
   const getLevel = (subject) => {
@@ -73,7 +73,7 @@ export default function Practice() {
 
   const { data: recentQuizzes = [] } = useQuery({
     queryKey: ["recent-quizzes-adaptive"],
-    queryFn: () => base44.entities.Quiz.filter({ completed: true }, "-created_date", 3),
+    queryFn: () => base44.entities.Quiz.filter({ completed: true, created_by_id: user?.id }, "-created_date", 3),
   });
 
   const getAdaptiveLevel = (subject) => {
