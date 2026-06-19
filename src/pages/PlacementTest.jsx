@@ -55,7 +55,6 @@ export default function PlacementTest() {
           }
         }
       },
-      add_context_from_internet: true,
     });
     setQuestions(res.questions || []);
     setAnswers(new Array(10).fill(-1));
