@@ -26,7 +26,7 @@ export default function Subjects() {
             <BookOpen className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-display font-bold">หกดก</h1>
+            <h1 className="text-2xl font-display font-bold">ทดสอบระดับวิชา</h1>
             <p className="text-sm text-muted-foreground">เลือกวิชาเพื่อทำ Placement Test (ฟรี ไม่ใช้ Token)</p>
           </div>
         </div>
