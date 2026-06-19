@@ -68,7 +68,7 @@ export default function Layout() {
             <div className="px-4 py-2 rounded-full text-white font-bold text-base leading-none" style={{ background: "linear-gradient(135deg, #4F46E5, #9333EA)", boxShadow: "0 0 18px rgba(139,92,246,0.55)" }}>AI</div>
             <div>
               <h1 className="font-display font-bold text-base text-white leading-none">AI Tutor</h1>
-              <p className="text-xs text-white/45 font-body mt-0.5">เรียนเร็วกว่า</p>
+              <p className="text-xs text-white/45 font-body mt-0.5">เรียนเร็วกว่าใคร</p>
             </div>
           </Link>
         </div>
