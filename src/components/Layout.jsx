@@ -5,18 +5,18 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Home, BookOpen, Trophy, CreditCard, User, LogOut, Menu,
-  Zap, GraduationCap, Swords, FlaskConical
-} from "lucide-react";
+  Zap, GraduationCap, Swords, FlaskConical } from
+"lucide-react";
 
 const navItems = [
-  { path: "/", label: "หน้าหลัก", icon: Home, emoji: "🏠" },
-  { path: "/subjects", label: "เลือกวิชา", icon: BookOpen, emoji: "📚" },
-  { path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical, emoji: "✏️" },
-  { path: "/battle", label: "แข่งขัน", icon: Swords, emoji: "⚔️" },
-  { path: "/tournament", label: "Tournament", icon: Trophy, emoji: "🏆" },
-  { path: "/tokens", label: "เติม Token", icon: CreditCard, emoji: "💎" },
-  { path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" },
-];
+{ path: "/", label: "หน้าหลัก", icon: Home, emoji: "🏠" },
+{ path: "/subjects", label: "เลือกวิชา", icon: BookOpen, emoji: "📚" },
+{ path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical, emoji: "✏️" },
+{ path: "/battle", label: "แข่งขัน", icon: Swords, emoji: "⚔️" },
+{ path: "/tournament", label: "Tournament", icon: Trophy, emoji: "🏆" },
+{ path: "/tokens", label: "เติม Token", icon: CreditCard, emoji: "💎" },
+{ path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" }];
+
 
 function NavLink({ item, onClick }) {
   const location = useLocation();
@@ -27,15 +27,15 @@ function NavLink({ item, onClick }) {
       to={item.path}
       onClick={onClick}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-        isActive
-          ? "bg-primary text-white shadow-md shadow-primary/30"
-          : "text-white/55 hover:bg-white/8 hover:text-white"
-      }`}
-    >
+      isActive ?
+      "bg-primary text-white shadow-md shadow-primary/30" :
+      "text-white/55 hover:bg-white/8 hover:text-white"}`
+      }>
+      
       <span className="text-base">{item.emoji}</span>
       {item.label}
-    </Link>
-  );
+    </Link>);
+
 }
 
 export default function Layout() {
@@ -52,7 +52,7 @@ export default function Layout() {
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg">A</div>
             <div>
               <h1 className="font-display font-bold text-base text-white leading-none">AI Tutor</h1>
-              <p className="text-xs text-white/45 font-body mt-0.5">Highschool Edition</p>
+              <p className="text-xs text-white/45 font-body mt-0.5">เรียนเร็วเรี</p>
             </div>
           </Link>
         </div>
@@ -70,8 +70,8 @@ export default function Layout() {
         <div className="px-4 py-4 border-t border-white/10">
           <button
             onClick={() => logout("/")}
-            className="flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/8"
-          >
+            className="flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/8">
+            
             <LogOut className="w-4 h-4" />
             ออกจากระบบ
           </button>
@@ -109,15 +109,15 @@ export default function Layout() {
                 </div>
               </div>
               <nav className="p-3 space-y-0.5">
-                {navItems.map((item) => (
-                  <NavLink key={item.path} item={item} onClick={() => setOpen(false)} />
-                ))}
+                {navItems.map((item) =>
+                <NavLink key={item.path} item={item} onClick={() => setOpen(false)} />
+                )}
               </nav>
               <div className="px-4 py-4 border-t border-white/10">
                 <button
                   onClick={() => logout("/")}
-                  className="flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors"
-                >
+                  className="flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors">
+                  
                   <LogOut className="w-4 h-4" />
                   ออกจากระบบ
                 </button>
@@ -133,6 +133,6 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
-    </div>
-  );
+    </div>);
+
 }
