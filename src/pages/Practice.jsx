@@ -23,7 +23,7 @@ export default function Practice() {
   const queryClient = useQueryClient();
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedTopics, setSelectedTopics] = useState([]);
   const [numQuestions, setNumQuestions] = useState("5");
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
@@ -105,7 +105,7 @@ export default function Practice() {
     queryClient.invalidateQueries({ queryKey: ["current-user-practice"] });
 
     const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
-    const topicText = selectedTopic ? `เนื้อหา: ${selectedTopic}` : "";
+    const topicText = selectedTopics.length > 0 ? `เนื้อหา: ${selectedTopics.join(", ")}` : "";
 
     const res = await base44.integrations.Core.InvokeLLM({
       model: "gemini_3_1_pro",
@@ -150,7 +150,7 @@ export default function Practice() {
       grade: selectedGrade,
       difficulty_level: level,
       questions: fetchedQuestions,
-      title: `${selectedSubject} ${selectedGrade}${selectedTopic ? ` - ${selectedTopic}` : ""} Lv.${level}`,
+      title: `${selectedSubject} ${selectedGrade}${selectedTopics.length > 0 ? ` - ${selectedTopics.join(", ")}` : ""} Lv.${level}`,
     });
     queryClient.invalidateQueries({ queryKey: ["saved-quizzes", user?.id] });
 
@@ -249,7 +249,7 @@ export default function Practice() {
   const reset = () => {
     setSelectedSubject(null);
     setSelectedGrade("");
-    setSelectedTopic("");
+    setSelectedTopics([]);
     setQuestions([]);
     setResult(null);
     setShowExplanation(false);
@@ -324,7 +324,7 @@ export default function Practice() {
             {/* Step 1: Grade */}
             <div>
               <label className="text-sm font-semibold mb-2 block">📚 ระดับชั้น</label>
-              <Select value={selectedGrade} onValueChange={(v) => { setSelectedGrade(v); setSelectedTopic(""); }}>
+              <Select value={selectedGrade} onValueChange={(v) => { setSelectedGrade(v); setSelectedTopics([]); }}>
                 <SelectTrigger>
                   <SelectValue placeholder="เลือกระดับชั้น" />
                 </SelectTrigger>
@@ -336,36 +336,37 @@ export default function Practice() {
               </Select>
             </div>
 
-            {/* Step 2: Topic */}
+            {/* Step 2: Topic (multi-select) */}
             {selectedGrade && availableTopics.length > 0 && (
               <div>
-                <label className="text-sm font-semibold mb-2 block">📖 เนื้อหาที่ต้องการฝึก</label>
+                <label className="text-sm font-semibold mb-1 block">📖 เนื้อหาที่ต้องการฝึก</label>
+                <p className="text-xs text-muted-foreground mb-2">เลือกได้มากกว่า 1 หัวข้อ (ไม่เลือก = สุ่มทุกเนื้อหา)</p>
                 <div className="grid grid-cols-1 gap-2">
-                  <button
-                    onClick={() => setSelectedTopic("")}
-                    className={`text-left px-4 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
-                      selectedTopic === ""
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border bg-card text-muted-foreground hover:border-primary/40"
-                    }`}
-                  >
-                    🎲 สุ่มทุกเนื้อหา ({selectedGrade})
-                  </button>
-                  {availableTopics.map((topic) => (
-                    <button
-                      key={topic}
-                      onClick={() => setSelectedTopic(topic)}
-                      className={`text-left px-4 py-2.5 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-between ${
-                        selectedTopic === topic
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-card text-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      <span>{topic}</span>
-                      {selectedTopic === topic && <ChevronRight className="w-4 h-4" />}
-                    </button>
-                  ))}
+                  {availableTopics.map((topic) => {
+                    const isSelected = selectedTopics.includes(topic);
+                    return (
+                      <button
+                        key={topic}
+                        onClick={() => setSelectedTopics(prev =>
+                          isSelected ? prev.filter(t => t !== topic) : [...prev, topic]
+                        )}
+                        className={`text-left px-4 py-2.5 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-between ${
+                          isSelected
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-card text-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        <span>{topic}</span>
+                        {isSelected && <CheckCircle className="w-4 h-4 flex-shrink-0" />}
+                      </button>
+                    );
+                  })}
                 </div>
+                {selectedTopics.length > 0 && (
+                  <button onClick={() => setSelectedTopics([])} className="text-xs text-muted-foreground underline mt-1">
+                    ล้างการเลือก
+                  </button>
+                )}
               </div>
             )}
 
