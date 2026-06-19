@@ -199,14 +199,15 @@ export default function Practice() {
     setShowExplanation(true);
     setCurrentIndex(0);
 
-    // Generate AI study guide for wrong answers
+    // Generate AI study guide
     const wrongQuestions = questions.filter((q, i) => answers[i] !== q.correct_answer);
-    if (wrongQuestions.length > 0) {
-      setLoadingGuide(true);
-      const wrongSummary = wrongQuestions.map((q, i) => `${i + 1}. ${q.question}`).join("\n");
-      const guideRes = await base44.integrations.Core.InvokeLLM({
-        model: "claude_sonnet_4_6",
-        prompt: `นักเรียนทำข้อสอบวิชา ${selectedSubject} แล้วตอบผิดในข้อต่อไปนี้:\n${wrongSummary}\n\nกรุณาแนะนำแนวทางแก้ไขเป็นภาษาไทยสำหรับแต่ละข้อ โดยระบุ:\n1. จุดที่ต้องปรับปรุง\n2. บทเรียน/หัวข้อที่ควรทบทวน\n3. เคล็ดลับการจำ\nให้กระชับ เข้าใจง่าย เหมาะสำหรับนักเรียนมัธยม`,
+    setLoadingGuide(true);
+    const guideSummary = wrongQuestions.length > 0 
+      ? `นักเรียนทำข้อสอบวิชา ${selectedSubject} แล้วตอบผิดในข้อต่อไปนี้:\n${wrongQuestions.map((q, i) => `${i + 1}. ${q.question}`).join("\n")}\n\nกรุณาแนะนำแนวทางแก้ไขเป็นภาษาไทยสำหรับแต่ละข้อ โดยระบุ:\n1. จุดที่ต้องปรับปรุง\n2. บทเรียน/หัวข้อที่ควรทบทวน\n3. เคล็ดลับการจำ\nให้กระชับ เข้าใจง่าย เหมาะสำหรับนักเรียนมัธยม`
+      : `นักเรียนทำข้อสอบวิชา ${selectedSubject} ได้ ${result.score}/${result.total_questions} ข้อ กรุณาสร้างแผนการเรียนเพื่อเพิ่มพูนความรู้ให้ลึกขึ้น:\n1. หัวข้อสำคัญที่ควรเรียนเพิ่มเติม\n2. เคล็ดลับการจำและการเข้าใจที่ลึกขึ้น\n3. ข้อแนะนำสำหรับการทดสอบครั้งถัดไป`;
+    const guideRes = await base44.integrations.Core.InvokeLLM({
+      model: "claude_sonnet_4_6",
+      prompt: guideSummary,
         response_json_schema: {
           type: "object",
           properties: {
@@ -226,10 +227,9 @@ export default function Practice() {
             }
           }
         }
-      });
-      setStudyGuide(guideRes);
-      setLoadingGuide(false);
-    }
+    });
+    setStudyGuide(guideRes);
+    setLoadingGuide(false);
 
     // ---- Per-Subject Level Up ----
     const currentSubjectLevels = user?.subject_levels || {};
