@@ -33,8 +33,9 @@ export default function Home() {
   }, [user?.id]);
 
   const { data: quizzes = [] } = useQuery({
-    queryKey: ["recent-quizzes"],
-    queryFn: () => base44.entities.Quiz.filter({ completed: true }, "-created_date", 5),
+    queryKey: ["recent-quizzes", user?.id],
+    queryFn: () => base44.entities.Quiz.filter({ completed: true, created_by_id: user?.id }, "-created_date", 5),
+    enabled: !!user?.id,
   });
 
   const subjectLevels = user?.subject_levels || {};
