@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Crown } from "lucide-react";
+import DailyLoginReward from "@/components/DailyLoginReward";
 
 const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
@@ -16,6 +17,20 @@ const quickLinks = [
 
 export default function Home() {
   const { user } = useAuth();
+  const [showDailyReward, setShowDailyReward] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const checkDaily = async () => {
+      const records = await base44.entities.DailyLogin.filter({ user_id: user.id });
+      const rec = records[0];
+      const today = new Date().toISOString().split("T")[0];
+      if (!rec || rec.last_login_date !== today) {
+        setShowDailyReward(true);
+      }
+    };
+    checkDaily();
+  }, [user?.id]);
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ["recent-quizzes"],
@@ -35,6 +50,7 @@ export default function Home() {
 
   return (
     <div className="space-y-6 pb-10">
+      {showDailyReward && <DailyLoginReward onClose={() => setShowDailyReward(false)} />}
 
       {/* Hero greeting */}
       <div className="bg-white rounded-3xl p-6 border-2 border-purple-100 shadow-sm relative overflow-hidden">

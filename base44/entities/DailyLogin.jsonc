@@ -1,0 +1,28 @@
+{
+  "name": "DailyLogin",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "streak": {
+      "type": "number",
+      "default": 1
+    },
+    "last_login_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "total_days": {
+      "type": "number",
+      "default": 1
+    },
+    "tokens_earned_today": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

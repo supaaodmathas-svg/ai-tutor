@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import QuizQuestion from "@/components/QuizQuestion";
 import SubjectCard from "@/components/SubjectCard";
 import LevelUpOverlay from "@/components/LevelUpOverlay";
-import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw } from "lucide-react";
+import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -30,6 +30,8 @@ export default function Practice() {
   const [result, setResult] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [levelUp, setLevelUp] = useState(null);
+  const [studyGuide, setStudyGuide] = useState(null);
+  const [loadingGuide, setLoadingGuide] = useState(false);
 
   const { data: currentUser } = useQuery({
     queryKey: ["current-user-practice"],
@@ -143,6 +145,37 @@ export default function Practice() {
     setShowExplanation(true);
     setCurrentIndex(0);
 
+    // Generate AI study guide for wrong answers
+    const wrongQuestions = questions.filter((q, i) => answers[i] !== q.correct_answer);
+    if (wrongQuestions.length > 0) {
+      setLoadingGuide(true);
+      const wrongSummary = wrongQuestions.map((q, i) => `${i + 1}. ${q.question}`).join("\n");
+      const guideRes = await base44.integrations.Core.InvokeLLM({
+        prompt: `นักเรียนทำข้อสอบวิชา ${selectedSubject} แล้วตอบผิดในข้อต่อไปนี้:\n${wrongSummary}\n\nกรุณาแนะนำแนวทางแก้ไขเป็นภาษาไทยสำหรับแต่ละข้อ โดยระบุ:\n1. จุดที่ต้องปรับปรุง\n2. บทเรียน/หัวข้อที่ควรทบทวน\n3. เคล็ดลับการจำ\nให้กระชับ เข้าใจง่าย เหมาะสำหรับนักเรียนมัธยม`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            overall_advice: { type: "string" },
+            topics_to_review: { type: "array", items: { type: "string" } },
+            study_tips: { type: "array", items: { type: "string" } },
+            per_question: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  question_summary: { type: "string" },
+                  fix_advice: { type: "string" },
+                  chapter_to_read: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+      setStudyGuide(guideRes);
+      setLoadingGuide(false);
+    }
+
     // ---- Per-Subject Level Up ----
     const currentSubjectLevels = user?.subject_levels || {};
     const currentSubjLevel = currentSubjectLevels[selectedSubject] || 1;
@@ -174,6 +207,7 @@ export default function Practice() {
     setQuestions([]);
     setResult(null);
     setShowExplanation(false);
+    setStudyGuide(null);
   };
 
   if (!selectedSubject) {
@@ -334,6 +368,67 @@ export default function Practice() {
               showResult
             />
           ))}
+
+          {/* AI Study Guide */}
+          {loadingGuide && (
+            <div className="flex items-center gap-3 p-5 bg-purple-50 border-2 border-purple-200 rounded-3xl">
+              <Loader2 className="w-5 h-5 text-primary animate-spin flex-shrink-0" />
+              <p className="text-sm font-semibold text-primary">AI กำลังวิเคราะห์และสร้างแผนการเรียน...</p>
+            </div>
+          )}
+
+          {studyGuide && (
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-3xl p-6 space-y-5">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-primary" />
+                <h3 className="font-display font-bold text-lg text-primary">📚 แผนการแก้ไขจาก AI</h3>
+              </div>
+
+              {studyGuide.overall_advice && (
+                <div className="bg-white rounded-2xl p-4 border border-purple-100">
+                  <p className="text-xs font-bold text-muted-foreground mb-1">🎯 ภาพรวม</p>
+                  <p className="text-sm text-foreground">{studyGuide.overall_advice}</p>
+                </div>
+              )}
+
+              {studyGuide.topics_to_review?.length > 0 && (
+                <div className="bg-white rounded-2xl p-4 border border-purple-100">
+                  <p className="text-xs font-bold text-muted-foreground mb-2">📖 บทที่ควรทบทวน</p>
+                  <div className="flex flex-wrap gap-2">
+                    {studyGuide.topics_to_review.map((t, i) => (
+                      <span key={i} className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {studyGuide.per_question?.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-xs font-bold text-muted-foreground">🔍 วิธีแก้ไขรายข้อ</p>
+                  {studyGuide.per_question.map((pq, i) => (
+                    <div key={i} className="bg-white rounded-2xl p-4 border border-pink-100">
+                      <p className="text-xs font-bold text-pink-600 mb-1">❌ ข้อที่ทำผิด: {pq.question_summary}</p>
+                      <p className="text-sm text-foreground mb-2">{pq.fix_advice}</p>
+                      {pq.chapter_to_read && (
+                        <p className="text-xs text-blue-600 font-semibold">📗 อ่านเพิ่มเติม: {pq.chapter_to_read}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {studyGuide.study_tips?.length > 0 && (
+                <div className="bg-white rounded-2xl p-4 border border-purple-100">
+                  <p className="text-xs font-bold text-muted-foreground mb-2">💡 เคล็ดลับการจำ</p>
+                  <ul className="space-y-1">
+                    {studyGuide.study_tips.map((tip, i) => (
+                      <li key={i} className="text-sm text-foreground flex gap-2"><span>•</span>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </>
     );
