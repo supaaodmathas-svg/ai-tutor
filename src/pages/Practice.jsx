@@ -35,7 +35,6 @@ export default function Practice() {
   const [studyGuide, setStudyGuide] = useState(null);
   const [loadingGuide, setLoadingGuide] = useState(false);
   const [isRetake, setIsRetake] = useState(false);
-  const isAIPro = currentUser?.is_premium || user?.is_premium;
 
   // Load saved quiz from URL param (retake — no token cost)
   useEffect(() => {
@@ -118,6 +117,7 @@ export default function Practice() {
       ? "อธิบายเหตุผลว่าทำไมคำตอบจึงถูก ลักษณะ หลักการทำงาน และความสัมพันธ์ของสิ่งมีชีวิต"
       : "อธิบายเหตุผลและหลักการที่สำคัญ";
 
+    const isAIPro = currentUser?.is_premium || user?.is_premium;
     const quizModel = isAIPro ? "gpt_5_mini" : "gemini_3_1_pro";
 
     const res = await base44.integrations.Core.InvokeLLM({
@@ -212,8 +212,9 @@ export default function Practice() {
     const guideSummary = wrongQuestions.length > 0 
       ? `นักเรียนทำข้อสอบวิชา ${selectedSubject} แล้วตอบผิดในข้อต่อไปนี้:\n${wrongQuestions.map((q, i) => `${i + 1}. ${q.question}`).join("\n")}\n\nกรุณาแนะนำแนวทางแก้ไขเป็นภาษาไทยสำหรับแต่ละข้อ โดยระบุ:\n1. จุดที่ต้องปรับปรุง\n2. บทเรียน/หัวข้อที่ควรทบทวน\n3. เคล็ดลับการจำ\nให้กระชับ เข้าใจง่าย เหมาะสำหรับนักเรียนมัธยม`
       : `นักเรียนทำข้อสอบวิชา ${selectedSubject} ได้ ${result.score}/${result.total_questions} ข้อ กรุณาสร้างแผนการเรียนเพื่อเพิ่มพูนความรู้ให้ลึกขึ้น:\n1. หัวข้อสำคัญที่ควรเรียนเพิ่มเติม\n2. เคล็ดลับการจำและการเข้าใจที่ลึกขึ้น\n3. ข้อแนะนำสำหรับการทดสอบครั้งถัดไป`;
-    const guideModel = isAIPro ? "gpt_5_mini" : "claude_sonnet_4_6";
-    const guideRes = await base44.integrations.Core.InvokeLLM({
+      const isAIPro2 = currentUser?.is_premium || user?.is_premium;
+      const guideModel = isAIPro2 ? "gpt_5_mini" : "claude_sonnet_4_6";
+      const guideRes = await base44.integrations.Core.InvokeLLM({
       model: guideModel,
       prompt: guideSummary,
         response_json_schema: {
