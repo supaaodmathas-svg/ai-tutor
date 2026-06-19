@@ -501,53 +501,85 @@ export default function Practice() {
           )}
 
           {studyGuide && (
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-3xl p-6 space-y-5">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-primary" />
-                <h3 className="font-display font-bold text-lg text-primary">📚 แผนการแก้ไขจาก AI</h3>
+            <div className="space-y-4">
+              {/* Main Header */}
+              <div className="bg-teal-600 text-white rounded-2xl p-5">
+                <h3 className="font-display font-bold text-lg flex items-center gap-2">📚 แผนการแก้ไขจาก AI</h3>
               </div>
 
+              {/* Overview */}
               {studyGuide.overall_advice && (
-                <div className="bg-card rounded-2xl p-4 border border-purple-200/50">
-                  <p className="text-xs font-bold text-muted-foreground mb-1">🎯 ภาพรวม</p>
-                  <p className="text-sm text-foreground">{studyGuide.overall_advice}</p>
-                </div>
-              )}
-
-              {studyGuide.topics_to_review?.length > 0 && (
-                <div className="bg-card rounded-2xl p-4 border border-purple-200/50">
-                  <p className="text-xs font-bold text-muted-foreground mb-2">📖 บทที่ควรทบทวน</p>
-                  <div className="flex flex-wrap gap-2">
-                    {studyGuide.topics_to_review.map((t, i) => (
-                      <span key={i} className="text-xs bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full font-semibold">{t}</span>
-                    ))}
+                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                  <div className="bg-teal-100 p-4 border-b border-gray-200">
+                    <p className="text-sm font-bold text-teal-700">🎯 ภาพรวม</p>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-sm text-foreground">{studyGuide.overall_advice}</p>
                   </div>
                 </div>
               )}
 
-              {studyGuide.per_question?.length > 0 && (
-                <div className="space-y-3">
-                  <p className="text-xs font-bold text-muted-foreground">🔍 วิธีแก้ไขรายข้อ</p>
-                  {studyGuide.per_question.map((pq, i) => (
-                    <div key={i} className="bg-card rounded-2xl p-4 border border-pink-200/50">
-                      <p className="text-xs font-bold text-pink-600 dark:text-pink-400 mb-1">❌ ข้อที่ทำผิด: {pq.question_summary}</p>
-                      <p className="text-sm text-foreground mb-2">{pq.fix_advice}</p>
-                      {pq.chapter_to_read && (
-                        <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold">📗 อ่านเพิ่มเติม: {pq.chapter_to_read}</p>
-                      )}
+              {/* Two Column Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Topics to Review */}
+                {studyGuide.topics_to_review?.length > 0 && (
+                  <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                    <div className="bg-teal-100 p-4 border-b border-gray-200">
+                      <p className="text-sm font-bold text-teal-700">📖 บทที่ควรทบทวน</p>
                     </div>
-                  ))}
-                </div>
-              )}
+                    <div className="p-5 space-y-2">
+                      {studyGuide.topics_to_review.map((t, i) => (
+                        <div key={i} className="flex gap-2 text-sm">
+                          <span className="text-teal-600 font-bold">•</span>
+                          <span className="text-foreground">{t}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              {studyGuide.study_tips?.length > 0 && (
-                <div className="bg-card rounded-2xl p-4 border border-purple-200/50">
-                  <p className="text-xs font-bold text-muted-foreground mb-2">💡 เคล็ดลับการจำ</p>
-                  <ul className="space-y-1">
-                    {studyGuide.study_tips.map((tip, i) => (
-                      <li key={i} className="text-sm text-foreground flex gap-2"><span>•</span>{tip}</li>
-                    ))}
-                  </ul>
+                {/* Study Tips */}
+                {studyGuide.study_tips?.length > 0 && (
+                  <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                    <div className="bg-teal-100 p-4 border-b border-gray-200">
+                      <p className="text-sm font-bold text-teal-700">💡 เคล็ดลับการจำ</p>
+                    </div>
+                    <div className="p-5 space-y-2">
+                      {studyGuide.study_tips.map((tip, i) => (
+                        <div key={i} className="flex gap-2 text-sm">
+                          <span className="text-teal-600 font-bold">•</span>
+                          <span className="text-foreground">{tip}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Wrong Questions (Expandable) */}
+              {studyGuide.per_question?.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                  <details className="group">
+                    <summary className="bg-red-50 p-5 cursor-pointer flex items-center justify-between border-b border-gray-200 hover:bg-red-100 transition">
+                      <p className="text-sm font-bold text-red-600 flex items-center gap-2">
+                        ❌ ข้อที่ทำผิด
+                      </p>
+                      <svg className="w-5 h-5 text-red-600 transform group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                    </summary>
+                    <div className="p-5 space-y-4">
+                      {studyGuide.per_question.map((pq, i) => (
+                        <div key={i} className="border-l-4 border-red-400 pl-4 py-2">
+                          <p className="text-xs font-bold text-red-600 mb-1">{pq.question_summary}</p>
+                          <p className="text-sm text-foreground mb-2">{pq.fix_advice}</p>
+                          {pq.chapter_to_read && (
+                            <p className="text-xs text-teal-600 font-semibold">📗 {pq.chapter_to_read}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
                 </div>
               )}
             </div>
