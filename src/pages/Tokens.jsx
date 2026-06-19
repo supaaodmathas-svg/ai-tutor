@@ -111,6 +111,7 @@ export default function Tokens() {
   const closeDialog = () => {
     setShowPayment(false);
     setPaid(false);
+    if (paid) window.location.reload();
   };
 
   return (
