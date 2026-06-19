@@ -62,9 +62,9 @@ module.exports = {
   			}
   		},
   		fontFamily: {
-  			heading: ['var(--font-heading)'],
-  			body: ['var(--font-body)'],
-  			display: ['var(--font-display)'],
+  			heading: ['var(--font-heading)', 'Nunito', 'sans-serif'],
+  			body: ['var(--font-body)', 'Nunito', 'sans-serif'],
+  			display: ['var(--font-display)', 'Prompt', 'sans-serif'],
   			mono: ['var(--font-mono)']
   		},
   		keyframes: {

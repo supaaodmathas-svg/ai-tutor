@@ -9,31 +9,30 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { path: "/", label: "หน้าหลัก", icon: Home },
-  { path: "/subjects", label: "เลือกวิชา", icon: BookOpen },
-  { path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical },
-  { path: "/battle", label: "แข่งขัน", icon: Swords },
-  { path: "/tournament", label: "Tournament", icon: Trophy },
-  { path: "/tokens", label: "เติม Token", icon: CreditCard },
-  { path: "/profile", label: "โปรไฟล์", icon: User },
+  { path: "/", label: "หน้าหลัก", icon: Home, emoji: "🏠" },
+  { path: "/subjects", label: "เลือกวิชา", icon: BookOpen, emoji: "📚" },
+  { path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical, emoji: "✏️" },
+  { path: "/battle", label: "แข่งขัน", icon: Swords, emoji: "⚔️" },
+  { path: "/tournament", label: "Tournament", icon: Trophy, emoji: "🏆" },
+  { path: "/tokens", label: "เติม Token", icon: CreditCard, emoji: "💎" },
+  { path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" },
 ];
 
 function NavLink({ item, onClick }) {
   const location = useLocation();
   const isActive = location.pathname === item.path;
-  const Icon = item.icon;
 
   return (
     <Link
       to={item.path}
       onClick={onClick}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+      className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-200 ${
         isActive
-          ? "bg-secondary text-foreground font-medium"
-          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+          ? "bg-primary text-white shadow-md"
+          : "text-foreground/70 hover:bg-purple-50 hover:text-foreground"
       }`}
     >
-      <Icon className="w-4 h-4 flex-shrink-0" />
+      <span className="text-base">{item.emoji}</span>
       {item.label}
     </Link>
   );
@@ -47,26 +46,31 @@ export default function Layout() {
     <div className="min-h-screen bg-background">
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-56 flex-col bg-card border-r border-border z-40">
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col bg-white border-r-2 border-purple-100 z-40 shadow-sm">
         <div className="px-5 py-6">
           <Link to="/" className="flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-primary" />
-            <span className="font-display font-bold text-base">Iknow</span>
+            <span className="text-3xl">📖</span>
+            <div>
+              <h1 className="font-display font-bold text-lg text-primary leading-none">AI Tutor</h1>
+              <p className="text-xs text-muted-foreground font-body">เรียนรู้สนุก ๆ</p>
+            </div>
           </Link>
         </div>
 
-        <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
+        {/* Token display */}
+        <div className="mx-4 mb-4 p-3 rounded-2xl bg-purple-50 border border-purple-100">
+          <p className="text-xs text-muted-foreground font-semibold mb-1">⚡ Token คงเหลือ</p>
+          <p className="text-2xl font-display font-bold text-primary">{user?.tokens ?? 50}</p>
+        </div>
+
+        <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => <NavLink key={item.path} item={item} />)}
         </nav>
 
-        <div className="px-5 py-4 border-t border-border">
-          <div className="flex items-center gap-2 mb-4">
-            <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">{user?.tokens ?? 50} Tokens</span>
-          </div>
+        <div className="px-4 py-4 border-t border-purple-100">
           <button
             onClick={() => logout("/")}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full"
+            className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-red-400 transition-colors w-full px-3 py-2 rounded-2xl hover:bg-red-50"
           >
             <LogOut className="w-4 h-4" />
             ออกจากระบบ
@@ -75,37 +79,44 @@ export default function Layout() {
       </aside>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 inset-x-0 h-14 bg-card border-b border-border z-40 flex items-center justify-between px-4">
+      <header className="lg:hidden fixed top-0 inset-x-0 h-14 bg-white border-b-2 border-purple-100 z-40 flex items-center justify-between px-4 shadow-sm">
         <Link to="/" className="flex items-center gap-2">
-          <GraduationCap className="w-5 h-5 text-primary" />
-          <span className="font-display font-bold">Iknow</span>
+          <span className="text-2xl">📖</span>
+          <span className="font-display font-bold text-primary">AI Tutor</span>
         </Link>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-sm">
-            <Zap className="w-4 h-4 text-primary" />
-            <span className="font-medium">{user?.tokens ?? 50}</span>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100">
+            <span className="text-sm">⚡</span>
+            <span className="text-sm font-bold text-primary">{user?.tokens ?? 50}</span>
           </div>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Menu className="w-4 h-4" />
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-purple-50">
+                <Menu className="w-5 h-5 text-primary" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-64 p-0">
-              <div className="px-5 py-5 border-b border-border">
-                <p className="font-medium text-sm">{user?.full_name || "ผู้ใช้"}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+            <SheetContent side="right" className="w-64 p-0 bg-white">
+              <div className="px-5 py-5 border-b-2 border-purple-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white font-bold text-lg">
+                    {user?.full_name?.[0] || "U"}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm">{user?.full_name || "ผู้ใช้"}</p>
+                    <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  </div>
+                </div>
               </div>
-              <nav className="p-3 space-y-0.5">
+              <nav className="p-3 space-y-1">
                 {navItems.map((item) => (
                   <NavLink key={item.path} item={item} onClick={() => setOpen(false)} />
                 ))}
               </nav>
-              <div className="px-5 py-4 border-t border-border">
+              <div className="px-4 py-4 border-t border-purple-100">
                 <button
                   onClick={() => logout("/")}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-red-400 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   ออกจากระบบ
@@ -117,7 +128,7 @@ export default function Layout() {
       </header>
 
       {/* Main Content */}
-      <main className="lg:ml-56 pt-14 lg:pt-0 min-h-screen">
+      <main className="lg:ml-60 pt-14 lg:pt-0 min-h-screen">
         <div className="p-5 md:p-8 max-w-3xl mx-auto">
           <Outlet />
         </div>
