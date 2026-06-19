@@ -52,7 +52,7 @@ export default function Layout() {
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg">A</div>
             <div>
               <h1 className="font-display font-bold text-base text-white leading-none">AI Tutor</h1>
-              <p className="text-xs text-white/45 font-body mt-0.5">เรียนเร็วเรียนได้</p>
+              <p className="text-xs text-white/45 font-body mt-0.5"></p>
             </div>
           </Link>
         </div>
