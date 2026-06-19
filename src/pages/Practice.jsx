@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import QuizQuestion from "@/components/QuizQuestion";
 import SubjectCard from "@/components/SubjectCard";
 import LevelUpOverlay from "@/components/LevelUpOverlay";
-import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw, BookOpen } from "lucide-react";
+import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw, BookOpen, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
+import { subjectTopics } from "@/lib/subjectTopics";
 
 const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
@@ -22,6 +23,7 @@ export default function Practice() {
   const queryClient = useQueryClient();
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
   const [numQuestions, setNumQuestions] = useState("5");
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
@@ -103,15 +105,17 @@ export default function Practice() {
     queryClient.invalidateQueries({ queryKey: ["current-user-practice"] });
 
     const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
+    const topicText = selectedTopic ? `เนื้อหา: ${selectedTopic}` : "";
 
     const res = await base44.integrations.Core.InvokeLLM({
       model: "gemini_3_1_pro",
-      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} จำนวน ${count} ข้อ
+      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} ${topicText} จำนวน ${count} ข้อ
 คุณต้องสร้างครบ ${count} ข้อเท่านั้น ไม่มากไม่น้อย
 ระดับความยาก: ${level}/5
 
 กฎสำคัญ:
 - สร้างข้อสอบให้ครบ ${count} ข้อเสมอ
+- ข้อสอบต้องเกี่ยวกับ${topicText || gradeText}เท่านั้น
 - แต่ละข้อมี choices อาร์เรย์ 4 รายการเสมอ (ไม่ใช่ 3 หรือ 5)
 - correct_answer คือ index 0, 1, 2, หรือ 3 เท่านั้น
 - เนื้อหาภาษาไทย ตรงหลักสูตร ${gradeText}
@@ -146,7 +150,7 @@ export default function Practice() {
       grade: selectedGrade,
       difficulty_level: level,
       questions: fetchedQuestions,
-      title: `${selectedSubject} ${selectedGrade} Lv.${level}`,
+      title: `${selectedSubject} ${selectedGrade}${selectedTopic ? ` - ${selectedTopic}` : ""} Lv.${level}`,
     });
     queryClient.invalidateQueries({ queryKey: ["saved-quizzes", user?.id] });
 
@@ -245,6 +249,7 @@ export default function Practice() {
   const reset = () => {
     setSelectedSubject(null);
     setSelectedGrade("");
+    setSelectedTopic("");
     setQuestions([]);
     setResult(null);
     setShowExplanation(false);
@@ -307,36 +312,80 @@ export default function Practice() {
   }
 
   if (questions.length === 0) {
+    const availableGrades = Object.keys(subjectTopics[selectedSubject] || {});
+    const availableTopics = selectedGrade ? (subjectTopics[selectedSubject]?.[selectedGrade] || []) : [];
+
     return (
       <div className="max-w-md mx-auto space-y-6">
         <Card className="p-6 border-0 shadow-lg">
           <h2 className="text-xl font-display font-bold mb-4">{selectedSubject}</h2>
           <div className="space-y-4">
+
+            {/* Step 1: Grade */}
             <div>
-              <label className="text-sm font-medium mb-2 block">ระดับชั้น</label>
-              <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+              <label className="text-sm font-semibold mb-2 block">📚 ระดับชั้น</label>
+              <Select value={selectedGrade} onValueChange={(v) => { setSelectedGrade(v); setSelectedTopic(""); }}>
                 <SelectTrigger>
                   <SelectValue placeholder="เลือกระดับชั้น" />
                 </SelectTrigger>
                 <SelectContent>
-                  {gradeOptions.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                  {(availableGrades.length > 0 ? availableGrades : gradeOptions).map(g => (
+                    <SelectItem key={g} value={g}>{g}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-2 block">จำนวนข้อ</label>
-              <Select value={numQuestions} onValueChange={setNumQuestions}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5 ข้อ (50 Tokens)</SelectItem>
-                  <SelectItem value="10">10 ข้อ (100 Tokens)</SelectItem>
-                  <SelectItem value="20">20 ข้อ (200 Tokens)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Step 2: Topic */}
+            {selectedGrade && availableTopics.length > 0 && (
+              <div>
+                <label className="text-sm font-semibold mb-2 block">📖 เนื้อหาที่ต้องการฝึก</label>
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    onClick={() => setSelectedTopic("")}
+                    className={`text-left px-4 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
+                      selectedTopic === ""
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/40"
+                    }`}
+                  >
+                    🎲 สุ่มทุกเนื้อหา ({selectedGrade})
+                  </button>
+                  {availableTopics.map((topic) => (
+                    <button
+                      key={topic}
+                      onClick={() => setSelectedTopic(topic)}
+                      className={`text-left px-4 py-2.5 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-between ${
+                        selectedTopic === topic
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-card text-foreground hover:border-primary/40"
+                      }`}
+                    >
+                      <span>{topic}</span>
+                      {selectedTopic === topic && <ChevronRight className="w-4 h-4" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Num Questions */}
+            {selectedGrade && (
+              <div>
+                <label className="text-sm font-semibold mb-2 block">🔢 จำนวนข้อ</label>
+                <Select value={numQuestions} onValueChange={setNumQuestions}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5 ข้อ (50 Tokens)</SelectItem>
+                    <SelectItem value="10">10 ข้อ (100 Tokens)</SelectItem>
+                    <SelectItem value="20">20 ข้อ (200 Tokens)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="p-3 rounded-xl bg-secondary/50 text-sm space-y-1">
               <div className="flex items-center justify-between">
                 <span>ระดับ Adaptive</span>
@@ -354,11 +403,12 @@ export default function Practice() {
               </div>
               <p className="text-xs text-muted-foreground">ราคา 10 Tokens ต่อ 1 ข้อ</p>
             </div>
+
             <div className="flex gap-3">
               <Button variant="outline" onClick={reset} className="flex-1">
                 ← กลับ
               </Button>
-              <Button onClick={startQuiz} className="flex-1">
+              <Button onClick={startQuiz} className="flex-1" disabled={!selectedGrade}>
                 <Zap className="w-4 h-4 mr-2" />
                 เริ่มทำข้อสอบ
               </Button>
