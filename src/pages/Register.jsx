@@ -45,6 +45,8 @@ export default function Register() {
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
       }
+      // แจก 100 token ให้ผู้สมัครใหม่
+      await base44.auth.updateMe({ tokens: 100 });
       window.location.href = "/";
     } catch (err) {
       setError(err.message || "Invalid verification code");

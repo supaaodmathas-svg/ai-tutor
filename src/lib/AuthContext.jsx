@@ -93,7 +93,11 @@ export const AuthProvider = ({ children }) => {
     try {
       // Now check if the user is authenticated
       setIsLoadingAuth(true);
-      const currentUser = await base44.auth.me();
+      let currentUser = await base44.auth.me();
+      // แจก 100 token ให้ผู้สมัครใหม่ที่ยังไม่เคยได้รับ token (Google sign-up หรือ social login)
+      if (currentUser && currentUser.tokens == null) {
+        currentUser = await base44.auth.updateMe({ tokens: 100 });
+      }
       setUser(currentUser);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
