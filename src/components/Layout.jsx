@@ -46,10 +46,10 @@ export default function Layout() {
     <div className="min-h-screen bg-background">
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col bg-white border-r-2 border-purple-100 z-40 shadow-sm">
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col bg-white border-r-2 border-border z-40 shadow-sm">
         <div className="px-5 py-6">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-3xl">📖</span>
+            <span className="text-3xl">🌈</span>
             <div>
               <h1 className="font-display font-bold text-lg text-primary leading-none">AI Tutor</h1>
               <p className="text-xs text-muted-foreground font-body">เรียนรู้สนุก ๆ</p>
@@ -58,7 +58,7 @@ export default function Layout() {
         </div>
 
         {/* Token display */}
-        <div className="mx-4 mb-4 p-3 rounded-2xl bg-purple-50 border border-purple-100">
+        <div className="mx-4 mb-4 p-3 rounded-2xl bg-secondary border border-border">
           <p className="text-xs text-muted-foreground font-semibold mb-1">⚡ Token คงเหลือ</p>
           <p className="text-2xl font-display font-bold text-primary">{user?.tokens ?? 50}</p>
         </div>
@@ -67,7 +67,7 @@ export default function Layout() {
           {navItems.map((item) => <NavLink key={item.path} item={item} />)}
         </nav>
 
-        <div className="px-4 py-4 border-t border-purple-100">
+        <div className="px-4 py-4 border-t border-border">
           <button
             onClick={() => logout("/")}
             className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-red-400 transition-colors w-full px-3 py-2 rounded-2xl hover:bg-red-50"
@@ -79,25 +79,25 @@ export default function Layout() {
       </aside>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 inset-x-0 h-14 bg-white border-b-2 border-purple-100 z-40 flex items-center justify-between px-4 shadow-sm">
+      <header className="lg:hidden fixed top-0 inset-x-0 h-14 bg-white border-b-2 border-border z-40 flex items-center justify-between px-4 shadow-sm">
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl">📖</span>
+          <span className="text-2xl">🌈</span>
           <span className="font-display font-bold text-primary">AI Tutor</span>
         </Link>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border">
             <span className="text-sm">⚡</span>
             <span className="text-sm font-bold text-primary">{user?.tokens ?? 50}</span>
           </div>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-purple-50">
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-secondary">
                 <Menu className="w-5 h-5 text-primary" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-64 p-0 bg-white">
-              <div className="px-5 py-5 border-b-2 border-purple-100">
+              <div className="px-5 py-5 border-b-2 border-border">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white font-bold text-lg">
                     {user?.full_name?.[0] || "U"}
@@ -113,7 +113,7 @@ export default function Layout() {
                   <NavLink key={item.path} item={item} onClick={() => setOpen(false)} />
                 ))}
               </nav>
-              <div className="px-4 py-4 border-t border-purple-100">
+              <div className="px-4 py-4 border-t border-border">
                 <button
                   onClick={() => logout("/")}
                   className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-red-400 transition-colors"
