@@ -390,9 +390,6 @@ export default function Practice() {
                   <RotateCcw className="w-4 h-4 mr-2" />
                   ทำใหม่
                 </Button>
-                <Button onClick={() => { setCurrentIndex(0); }} className="flex-1">
-                  ดูเฉลย →
-                </Button>
               </div>
             </Card>
           </motion.div>
