@@ -11,7 +11,7 @@ import {
 
 const navItems = [
   { path: "/", label: "หน้าหลัก", icon: Home, emoji: "🏠" },
-  { path: "/subjects", label: "เลือกวิชา", icon: BookOpen, emoji: "📚" },
+  { path: "/subjects", label: "มาทดสอบระดับวิชากันหน่อย!", icon: BookOpen, emoji: "📚" },
   { path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical, emoji: "✏️" },
   { path: "/battle", label: "แข่งขัน", icon: Swords, emoji: "⚔️" },
   { path: "/tournament", label: "Tournament", icon: Trophy, emoji: "🏆" },
