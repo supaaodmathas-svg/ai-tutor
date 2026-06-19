@@ -107,6 +107,16 @@ export default function Practice() {
     const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
     const topicText = selectedTopics.length > 0 ? `เนื้อหา: ${selectedTopics.join(", ")}` : "";
 
+    const isMath = /คณิตศาสตร์|math|algebra|geometry|calculus|สถิติ|ความน่าจะเป็น/i.test(selectedSubject);
+    const isCalculation = /คณิตศาสตร์|ฟิสิกส์|เคมี|สถิติ|ความน่าจะเป็น|statistics|physics|chemistry|mathematics/i.test(selectedSubject);
+    const isBioLife = /ชีววิทยา|ชีววิทยา|biology|biology|สัตววิทยา|พืชศาสตร์/i.test(selectedSubject);
+    
+    const explanationGuide = isCalculation && !isBioLife 
+      ? "อธิบายโดยแสดงวิธีทำ ขั้นตอน และหลักการคำนวณ"
+      : isBioLife || /เคมี|chemistry/i.test(selectedSubject)
+      ? "อธิบายเหตุผลว่าทำไมคำตอบจึงถูก ลักษณะ หลักการทำงาน และความสัมพันธ์ของสิ่งมีชีวิต"
+      : "อธิบายเหตุผลและหลักการที่สำคัญ";
+
     const res = await base44.integrations.Core.InvokeLLM({
       model: "gemini_3_1_pro",
       prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} ${topicText} จำนวน ${count} ข้อ
@@ -119,7 +129,7 @@ export default function Practice() {
 - แต่ละข้อมี choices อาร์เรย์ 4 รายการเสมอ (ไม่ใช่ 3 หรือ 5)
 - correct_answer คือ index 0, 1, 2, หรือ 3 เท่านั้น
 - เนื้อหาภาษาไทย ตรงหลักสูตร ${gradeText}
-- explanation อธิบายเฉลยแต่ละข้อ`,
+- explanation: ${explanationGuide}`,
       response_json_schema: {
         type: "object",
         properties: {
