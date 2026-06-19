@@ -422,18 +422,18 @@ export default function Practice() {
               </div>
 
               {studyGuide.overall_advice && (
-                <div className="bg-white rounded-2xl p-4 border border-purple-100">
+                <div className="bg-card rounded-2xl p-4 border border-purple-200/50">
                   <p className="text-xs font-bold text-muted-foreground mb-1">🎯 ภาพรวม</p>
                   <p className="text-sm text-foreground">{studyGuide.overall_advice}</p>
                 </div>
               )}
 
               {studyGuide.topics_to_review?.length > 0 && (
-                <div className="bg-white rounded-2xl p-4 border border-purple-100">
+                <div className="bg-card rounded-2xl p-4 border border-purple-200/50">
                   <p className="text-xs font-bold text-muted-foreground mb-2">📖 บทที่ควรทบทวน</p>
                   <div className="flex flex-wrap gap-2">
                     {studyGuide.topics_to_review.map((t, i) => (
-                      <span key={i} className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">{t}</span>
+                      <span key={i} className="text-xs bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full font-semibold">{t}</span>
                     ))}
                   </div>
                 </div>
@@ -443,11 +443,11 @@ export default function Practice() {
                 <div className="space-y-3">
                   <p className="text-xs font-bold text-muted-foreground">🔍 วิธีแก้ไขรายข้อ</p>
                   {studyGuide.per_question.map((pq, i) => (
-                    <div key={i} className="bg-white rounded-2xl p-4 border border-pink-100">
-                      <p className="text-xs font-bold text-pink-600 mb-1">❌ ข้อที่ทำผิด: {pq.question_summary}</p>
+                    <div key={i} className="bg-card rounded-2xl p-4 border border-pink-200/50">
+                      <p className="text-xs font-bold text-pink-600 dark:text-pink-400 mb-1">❌ ข้อที่ทำผิด: {pq.question_summary}</p>
                       <p className="text-sm text-foreground mb-2">{pq.fix_advice}</p>
                       {pq.chapter_to_read && (
-                        <p className="text-xs text-blue-600 font-semibold">📗 อ่านเพิ่มเติม: {pq.chapter_to_read}</p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold">📗 อ่านเพิ่มเติม: {pq.chapter_to_read}</p>
                       )}
                     </div>
                   ))}
@@ -455,7 +455,7 @@ export default function Practice() {
               )}
 
               {studyGuide.study_tips?.length > 0 && (
-                <div className="bg-white rounded-2xl p-4 border border-purple-100">
+                <div className="bg-card rounded-2xl p-4 border border-purple-200/50">
                   <p className="text-xs font-bold text-muted-foreground mb-2">💡 เคล็ดลับการจำ</p>
                   <ul className="space-y-1">
                     {studyGuide.study_tips.map((tip, i) => (
