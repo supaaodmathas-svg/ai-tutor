@@ -186,6 +186,7 @@ export default function Practice() {
       setLoadingGuide(true);
       const wrongSummary = wrongQuestions.map((q, i) => `${i + 1}. ${q.question}`).join("\n");
       const guideRes = await base44.integrations.Core.InvokeLLM({
+        model: "claude_sonnet_4_6",
         prompt: `นักเรียนทำข้อสอบวิชา ${selectedSubject} แล้วตอบผิดในข้อต่อไปนี้:\n${wrongSummary}\n\nกรุณาแนะนำแนวทางแก้ไขเป็นภาษาไทยสำหรับแต่ละข้อ โดยระบุ:\n1. จุดที่ต้องปรับปรุง\n2. บทเรียน/หัวข้อที่ควรทบทวน\n3. เคล็ดลับการจำ\nให้กระชับ เข้าใจง่าย เหมาะสำหรับนักเรียนมัธยม`,
         response_json_schema: {
           type: "object",
