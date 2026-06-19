@@ -239,12 +239,17 @@ export default function Practice() {
     setStudyGuide(guideRes);
     setLoadingGuide(false);
 
-    // ---- Per-Subject Level Up ----
+    // ---- Per-Subject Level Based on Average Score ----
+    const subjectQuizzes = recentQuizzes.filter(q => q.subject === selectedSubject);
+    const allSubjectQuizzes = [quizResult, ...subjectQuizzes];
+    const avgScore = allSubjectQuizzes.reduce((acc, q) => acc + (q.score / q.total_questions), 0) / allSubjectQuizzes.length;
+    
+    // Calculate level based on average score: 0-20% = L1, 20-40% = L2, ..., 80-100% = L5
+    const newSubjLevel = Math.ceil(avgScore * 5);
     const currentSubjectLevels = user?.subject_levels || {};
     const currentSubjLevel = currentSubjectLevels[selectedSubject] || 1;
-    const newSubjLevel = currentSubjLevel + 1;
 
-    // Check if crossed a 10-level threshold
+    // Check if crossed a 10-level threshold (for token rewards)
     const oldTens = Math.floor((currentSubjLevel - 1) / 10);
     const newTens = Math.floor((newSubjLevel - 1) / 10);
     const tokensEarned = newTens > oldTens ? 50 : 0;
