@@ -53,19 +53,56 @@ export default function Home() {
       {showDailyReward && <DailyLoginReward onClose={() => setShowDailyReward(false)} />}
 
       {/* Hero greeting */}
-      <div className="bg-card rounded-3xl p-6 border-2 border-border shadow-sm relative overflow-hidden">
-        <div className="absolute top-3 right-4 text-3xl">🌟</div>
+      <div
+        className="bg-card rounded-3xl p-6 relative overflow-hidden"
+        style={user?.is_premium ? {
+          border: "2px solid #a855f7",
+          boxShadow: "0 0 0 1px rgba(168,85,247,0.3), 0 0 24px rgba(168,85,247,0.4), 0 0 60px rgba(168,85,247,0.15)",
+          background: "linear-gradient(135deg, hsl(var(--card)) 70%, rgba(168,85,247,0.08))"
+        } : { border: "2px solid hsl(var(--border))" }}
+      >
+        {/* Animated shimmer for Pro */}
+        {user?.is_premium && (
+          <div className="absolute inset-0 rounded-3xl pointer-events-none overflow-hidden">
+            <div style={{
+              position: "absolute", top: "-50%", left: "-60%",
+              width: "60%", height: "200%",
+              background: "linear-gradient(105deg, transparent 40%, rgba(168,85,247,0.12) 50%, transparent 60%)",
+              animation: "shimmer 3s infinite"
+            }} />
+          </div>
+        )}
+
+        {user?.is_premium ? (
+          <div className="absolute top-3 right-4 flex items-center gap-1.5">
+            <span className="text-xl">👑</span>
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{background: "rgba(168,85,247,0.2)", color: "#d8b4fe", border: "1px solid rgba(168,85,247,0.4)"}}>AI Pro</span>
+          </div>
+        ) : (
+          <div className="absolute top-3 right-4 text-3xl">🌟</div>
+        )}
+
         <p className="text-sm font-semibold text-muted-foreground mb-1">สวัสดี 👋</p>
-        <h1 className="text-2xl font-display font-bold text-foreground mb-1">
-          {user?.full_name || "นักเรียน"}!
+        <h1
+          className="text-2xl font-display font-bold mb-1"
+          style={user?.is_premium ? {
+            background: "linear-gradient(90deg, #818cf8, #c084fc, #e879f9)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent"
+          } : {}}
+        >
+          {!user?.is_premium && <span className="text-foreground">{user?.full_name || "นักเรียน"}!</span>}
+          {user?.is_premium && `${user?.full_name || "นักเรียน"}!`}
         </h1>
         <p className="text-sm text-muted-foreground">วันนี้จะเรียนรู้อะไรดี? 🚀</p>
-        {user?.is_premium && (
-          <span className="inline-flex items-center gap-1 mt-3 text-xs font-bold text-amber-700 bg-amber-100 border border-amber-200 px-3 py-1 rounded-full">
-            <Crown className="w-3 h-3" /> AI Pro ✨
-          </span>
-        )}
       </div>
+
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(280%); }
+        }
+      `}</style>
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
