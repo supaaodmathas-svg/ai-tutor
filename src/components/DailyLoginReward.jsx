@@ -79,7 +79,7 @@ export default function DailyLoginReward({ onClose }) {
 
     setClaimed(true);
     setClaiming(false);
-    await loadRecord();
+    setTimeout(() => { window.location.reload(); }, 800);
   };
 
   if (loading) return null;
