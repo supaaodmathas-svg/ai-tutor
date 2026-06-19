@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Crown } from "lucide-react";
 import DailyLoginReward from "@/components/DailyLoginReward";
+import SavedQuizzes from "@/components/SavedQuizzes";
 
 const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
@@ -152,6 +153,9 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Saved Quizzes */}
+      <SavedQuizzes />
 
       {/* AI Pro Upgrade */}
       {!user?.is_premium && (

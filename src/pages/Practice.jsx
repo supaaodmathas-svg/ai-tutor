@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,28 @@ export default function Practice() {
   const [levelUp, setLevelUp] = useState(null);
   const [studyGuide, setStudyGuide] = useState(null);
   const [loadingGuide, setLoadingGuide] = useState(false);
+  const [isRetake, setIsRetake] = useState(false);
+
+  // Load saved quiz from URL param (retake — no token cost)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const savedQuizId = params.get("savedQuizId");
+    if (!savedQuizId) return;
+    const load = async () => {
+      setLoading(true);
+      const sq = await base44.entities.SavedQuiz.get(savedQuizId);
+      if (sq && sq.questions?.length > 0) {
+        setSelectedSubject(sq.subject);
+        setSelectedGrade(sq.grade || "");
+        setQuestions(sq.questions);
+        setAnswers(new Array(sq.questions.length).fill(-1));
+        setCurrentIndex(0);
+        setIsRetake(true);
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const { data: currentUser } = useQuery({
     queryKey: ["current-user-practice"],
@@ -111,11 +133,24 @@ export default function Practice() {
     });
 
     const fetchedQuestions = (res.questions || []).slice(0, count);
+
+    // Save quiz for later retake (free)
+    await base44.entities.SavedQuiz.create({
+      user_id: user.id,
+      subject: selectedSubject,
+      grade: selectedGrade,
+      difficulty_level: level,
+      questions: fetchedQuestions,
+      title: `${selectedSubject} ${selectedGrade} Lv.${level}`,
+    });
+    queryClient.invalidateQueries({ queryKey: ["saved-quizzes", user?.id] });
+
     setQuestions(fetchedQuestions);
     setAnswers(new Array(fetchedQuestions.length).fill(-1));
     setCurrentIndex(0);
     setResult(null);
     setShowExplanation(false);
+    setIsRetake(false);
     setLoading(false);
   };
 
@@ -208,6 +243,11 @@ export default function Practice() {
     setResult(null);
     setShowExplanation(false);
     setStudyGuide(null);
+    setIsRetake(false);
+    // Remove savedQuizId from URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete("savedQuizId");
+    window.history.replaceState({}, "", url.toString());
   };
 
   if (!selectedSubject) {
@@ -441,6 +481,9 @@ export default function Practice() {
           <h1 className="text-xl font-display font-bold">{selectedSubject}</h1>
           <p className="text-sm text-muted-foreground">Level {getAdaptiveLevel(selectedSubject)} • Adaptive</p>
         </div>
+        {isRetake && (
+          <Badge className="bg-green-100 text-green-700 border-green-200">♻️ ทำซ้ำ ฟรี</Badge>
+        )}
       </div>
 
       <QuizQuestion
