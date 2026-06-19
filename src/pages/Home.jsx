@@ -37,11 +37,6 @@ export default function Home() {
     queryFn: () => base44.entities.Quiz.filter({ completed: true }, "-created_date", 5),
   });
 
-  const { data: placements = [] } = useQuery({
-    queryKey: ["placements"],
-    queryFn: () => base44.entities.PlacementTest.filter({ completed: true }, "-created_date", 10),
-  });
-
   const subjectLevels = user?.subject_levels || {};
 
   const avgScore = quizzes.length > 0
@@ -174,23 +169,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Recent Placements */}
-      {placements.length > 0 && (
-        <div>
-          <p className="text-sm font-bold text-muted-foreground mb-3">📋 ผลวัดระดับล่าสุด</p>
-          <div className="bg-card rounded-3xl border-2 border-border shadow-sm divide-y divide-border">
-            {placements.slice(0, 3).map((p) => (
-              <div key={p.id} className="flex items-center justify-between px-5 py-3">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{p.subject}</p>
-                  <p className="text-xs text-muted-foreground">คะแนน {p.score}/10</p>
-                </div>
-                <span className="text-sm font-bold text-primary bg-secondary px-3 py-0.5 rounded-full">Level {p.result_level}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
     </div>
   );
