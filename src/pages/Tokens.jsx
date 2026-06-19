@@ -116,6 +116,11 @@ export default function Tokens() {
 
   return (
     <div className="space-y-8 max-w-2xl mx-auto">
+      {/* Warning Alert */}
+      <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800">
+        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">⚠️ สำหรับกรรมการที่เข้ามาดูเว็บน่ะครับ สามารถกดซื้อได้เลยครับ ยังไม่ต้องใช้เงินจริงครับ</p>
+      </div>
+
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <Card className="p-6 border-0 shadow-xl bg-gradient-to-br from-primary via-primary/90 to-accent text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
