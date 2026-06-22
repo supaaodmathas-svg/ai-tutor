@@ -192,23 +192,7 @@ export default function Profile() {
         </Card>
       </div>
 
-      {/* Placement Results */}
-      {placements.length > 0 && (
-        <Card className="p-6 border-0 shadow-md">
-          <h3 className="font-heading font-semibold mb-3">ผลวัดระดับ</h3>
-          <div className="space-y-3">
-            {placements.map(p => (
-              <div key={p.id} className="flex items-center justify-between p-3 bg-secondary/30 rounded-xl">
-                <div>
-                  <p className="font-medium text-sm">{p.subject}</p>
-                  <p className="text-xs text-muted-foreground">คะแนน {p.score}/10</p>
-                </div>
-                <Badge>Level {p.result_level}</Badge>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
+
     </div>
   );
 }
