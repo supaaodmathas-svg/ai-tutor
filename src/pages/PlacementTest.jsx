@@ -101,17 +101,34 @@ export default function PlacementTest() {
       }
     });
 
+    // Clamp level to 0-5
+    const clampedLevel = Math.min(5, Math.max(0, Math.round(analysisRes.level)));
+
     const resultData = {
       subject,
       questions,
       user_answers: answers,
       score,
-      result_level: analysisRes.level,
+      result_level: clampedLevel,
       analysis: analysisRes.analysis,
       completed: true,
     };
-    await base44.entities.PlacementTest.create(resultData);
-    setResult({ ...resultData, ...analysisRes });
+
+    // Find existing placement for this subject (current user)
+    const existing = await base44.entities.PlacementTest.filter({ subject, completed: true });
+    if (existing.length > 0) {
+      await base44.entities.PlacementTest.update(existing[0].id, {
+        result_level: clampedLevel,
+        score,
+        analysis: analysisRes.analysis,
+        user_answers: answers,
+        questions,
+      });
+    } else {
+      await base44.entities.PlacementTest.create(resultData);
+    }
+
+    setResult({ ...resultData, level: clampedLevel });
     setAnalyzing(false);
   };
 

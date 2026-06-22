@@ -8,8 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import QuizQuestion from "@/components/QuizQuestion";
 import SubjectCard from "@/components/SubjectCard";
-import LevelUpOverlay from "@/components/LevelUpOverlay";
-import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw, BookOpen, ChevronRight } from "lucide-react";
+
+import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import { subjectTopics } from "@/lib/subjectTopics";
@@ -31,7 +31,7 @@ export default function Practice() {
   const [answers, setAnswers] = useState([]);
   const [result, setResult] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [levelUp, setLevelUp] = useState(null);
+
   const [studyGuide, setStudyGuide] = useState(null);
   const [loadingGuide, setLoadingGuide] = useState(false);
   const [isRetake, setIsRetake] = useState(false);
@@ -64,28 +64,14 @@ export default function Practice() {
   });
 
   const { data: placements = [] } = useQuery({
-    queryKey: ["my-placements-practice"],
+    queryKey: ["my-placements-practice", user?.id],
     queryFn: () => base44.entities.PlacementTest.filter({ completed: true, created_by_id: user?.id }),
+    enabled: !!user?.id,
   });
 
   const getLevel = (subject) => {
     const p = placements.find((p) => p.subject === subject);
-    return p?.result_level || 3;
-  };
-
-  const { data: recentQuizzes = [] } = useQuery({
-    queryKey: ["recent-quizzes-adaptive"],
-    queryFn: () => base44.entities.Quiz.filter({ completed: true, created_by_id: user?.id }, "-created_date", 3),
-  });
-
-  const getAdaptiveLevel = (subject) => {
-    const baseLevel = getLevel(subject);
-    const recent = recentQuizzes.filter(q => q.subject === subject).slice(0, 3);
-    if (recent.length === 0) return baseLevel;
-    const avgScore = recent.reduce((a, q) => a + (q.score / q.total_questions), 0) / recent.length;
-    if (avgScore >= 0.8 && baseLevel < 5) return Math.min(baseLevel + 1, 5);
-    if (avgScore <= 0.4 && baseLevel > 1) return Math.max(baseLevel - 1, 1);
-    return baseLevel;
+    return Math.min(5, Math.max(0, p?.result_level ?? 0));
   };
 
   const startQuiz = async () => {
@@ -99,7 +85,7 @@ export default function Practice() {
     }
 
     setLoading(true);
-    const level = getAdaptiveLevel(selectedSubject);
+    const level = getLevel(selectedSubject);
 
     await base44.auth.updateMe({ tokens: currentTokens - tokenCost });
     queryClient.invalidateQueries({ queryKey: ["current-user-practice"] });
@@ -192,7 +178,7 @@ export default function Practice() {
     const score = questions.reduce((acc, q, i) => acc + (answers[i] === q.correct_answer ? 1 : 0), 0);
     const quizResult = {
       subject: selectedSubject,
-      difficulty_level: getAdaptiveLevel(selectedSubject),
+      difficulty_level: getLevel(selectedSubject),
       questions,
       user_answers: answers,
       score,
@@ -239,34 +225,7 @@ export default function Practice() {
     setStudyGuide(guideRes);
     setLoadingGuide(false);
 
-    // ---- Per-Subject Level Based on Average Score ----
-    const subjectQuizzes = recentQuizzes.filter(q => q.subject === selectedSubject);
-    const allSubjectQuizzes = [quizResult, ...subjectQuizzes];
-    const avgScore = allSubjectQuizzes.reduce((acc, q) => acc + (q.score / q.total_questions), 0) / allSubjectQuizzes.length;
-    
-    // Calculate level based on average score: 0-20% = L1, 20-40% = L2, ..., 80-100% = L5
-    const newSubjLevel = Math.ceil(avgScore * 5);
-    const currentSubjectLevels = user?.subject_levels || {};
-    const currentSubjLevel = currentSubjectLevels[selectedSubject] || 1;
 
-    // Check if crossed a 10-level threshold (for token rewards)
-    const oldTens = Math.floor((currentSubjLevel - 1) / 10);
-    const newTens = Math.floor((newSubjLevel - 1) / 10);
-    const tokensEarned = newTens > oldTens ? 50 : 0;
-
-    const updatedLevels = { ...currentSubjectLevels, [selectedSubject]: newSubjLevel };
-    const meUpdate = { subject_levels: updatedLevels };
-    if (tokensEarned > 0) {
-      meUpdate.tokens = (user?.tokens ?? 0) + tokensEarned;
-    }
-    await base44.auth.updateMe(meUpdate);
-    queryClient.invalidateQueries({ queryKey: ["my-placements-practice"] });
-
-    if (tokensEarned > 0) {
-      setLevelUp({ subject: selectedSubject, newLevel: newSubjLevel, tokensEarned });
-    } else if (newSubjLevel % 5 === 0) {
-      setLevelUp({ subject: selectedSubject, newLevel: newSubjLevel, tokensEarned: 0 });
-    }
   };
 
   const reset = () => {
@@ -311,7 +270,7 @@ export default function Practice() {
             >
               <SubjectCard
                 subject={subject}
-                level={getAdaptiveLevel(subject)}
+                level={getLevel(subject)}
                 showLevel
                 onClick={() => setSelectedSubject(subject)}
               />
@@ -328,7 +287,7 @@ export default function Practice() {
         <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
         <p className="text-lg font-heading font-semibold">กำลังสร้างข้อสอบ...</p>
         <p className="text-sm text-muted-foreground mt-1">
-          Adaptive Level: {getAdaptiveLevel(selectedSubject)}
+          Level: {getLevel(selectedSubject)}
         </p>
       </div>
     );
@@ -431,8 +390,8 @@ export default function Practice() {
 
             <div className="p-3 rounded-xl bg-secondary/50 text-sm space-y-1">
               <div className="flex items-center justify-between">
-                <span>ระดับ Adaptive</span>
-                <Badge>Level {getAdaptiveLevel(selectedSubject)}</Badge>
+                <span>ระดับปัจจุบัน</span>
+                <Badge>Level {getLevel(selectedSubject)}</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span>ค่าใช้จ่าย</span>
@@ -465,14 +424,7 @@ export default function Practice() {
   if (result) {
     return (
       <>
-        {levelUp && (
-          <LevelUpOverlay
-            subject={levelUp.subject}
-            newLevel={levelUp.newLevel}
-            tokensEarned={levelUp.tokensEarned}
-            onClose={() => setLevelUp(null)}
-          />
-        )}
+
         <div className="max-w-2xl mx-auto space-y-6">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
             <Card className="p-8 border-0 shadow-xl text-center">
@@ -607,7 +559,7 @@ export default function Practice() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-display font-bold">{selectedSubject}</h1>
-          <p className="text-sm text-muted-foreground">Level {getAdaptiveLevel(selectedSubject)} • Adaptive</p>
+          <p className="text-sm text-muted-foreground">Level {getLevel(selectedSubject)}</p>
         </div>
         {isRetake && (
           <Badge className="bg-green-100 text-green-700 border-green-200">♻️ ทำซ้ำ ฟรี</Badge>
