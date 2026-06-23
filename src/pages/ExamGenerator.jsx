@@ -210,7 +210,7 @@ export default function ExamGenerator() {
     setAnalyzing(true);
     const isImage = type.startsWith("image/");
     const res = await base44.integrations.Core.InvokeLLM({
-      model: "gemini_3_1_pro",
+      model: "gemini_3_flash",
       prompt: `วิเคราะห์เนื้อหาในไฟล์นี้ (ชื่อไฟล์: ${name})
 จงระบุ:
 1. วิชาหรือหัวข้อหลักของเนื้อหา
@@ -258,7 +258,7 @@ export default function ExamGenerator() {
     };
 
     const res = await base44.integrations.Core.InvokeLLM({
-      model: "gemini_3_1_pro",
+      model: "gemini_3_flash",
       prompt: `สร้างข้อสอบจากเนื้อหาในไฟล์นี้ (อ้างอิงจากเนื้อหาเท่านั้น ห้ามสร้างจากความรู้ภายนอก)
 วิชา: ${analysis?.subject}
 หัวข้อสำคัญ: ${analysis?.topics?.join(", ")}
