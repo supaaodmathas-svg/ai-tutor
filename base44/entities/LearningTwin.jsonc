@@ -1,0 +1,97 @@
+{
+  "name": "LearningTwin",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_quizzes": {
+      "type": "number",
+      "default": 0
+    },
+    "total_questions_answered": {
+      "type": "number",
+      "default": 0
+    },
+    "overall_accuracy": {
+      "type": "number",
+      "default": 0
+    },
+    "subject_stats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "accuracy_history": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "latest_accuracy": {
+            "type": "number"
+          },
+          "quiz_count": {
+            "type": "number"
+          },
+          "wrong_topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "learning_dna": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0e2a\u0e23\u0e38\u0e1b\u0e25\u0e31\u0e01\u0e29\u0e13\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49"
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "weaknesses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fastest_improving": {
+      "type": "string"
+    },
+    "slowest_improving": {
+      "type": "string"
+    },
+    "insights": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consistency_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100"
+    },
+    "streak_days": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}
