@@ -14,26 +14,11 @@ const quickLinks = [
   { to: "/practice", label: "ฝึกทำข้อสอบ", sub: "AI สร้างข้อสอบให้", emoji: "✏️" },
   { to: "/battle", label: "Quiz Battle", sub: "ท้าเพื่อนแข่ง", emoji: "⚔️" },
   { to: "/tournament", label: "Tournament", sub: "แข่งชิงอันดับ", emoji: "🏆" },
+  { to: "/learning-twin", label: "AI Learning Twin", sub: "วิเคราะห์พัฒนาการ", emoji: "🤖" },
+  { to: "/exam-generator", label: "Exam Generator", sub: "สร้างข้อสอบจากไฟล์", emoji: "📄" },
 ];
 
-const newFeatures = [
-  {
-    to: "/learning-twin",
-    emoji: "🤖",
-    label: "AI Learning Twin",
-    sub: "คู่แฝด AI ติดตามพัฒนาการ",
-    gradient: "from-indigo-500 to-purple-600",
-    badge: "ใหม่",
-  },
-  {
-    to: "/exam-generator",
-    emoji: "📄",
-    label: "Exam Generator",
-    sub: "สร้างข้อสอบจากไฟล์ของคุณ",
-    gradient: "from-emerald-500 to-teal-600",
-    badge: "ใหม่",
-  },
-];
+
 
 export default function Home() {
   const { user } = useAuth();
@@ -140,23 +125,6 @@ export default function Home() {
         <div className="bg-card rounded-3xl p-4 text-center border-2 border-border shadow-sm">
           <p className="text-2xl font-display font-bold text-amber-500">⭐ {avgScore !== null ? `${avgScore}%` : "—"}</p>
           <p className="text-xs font-semibold text-muted-foreground mt-1">คะแนนเฉลี่ย</p>
-        </div>
-      </div>
-
-      {/* New Features */}
-      <div>
-        <p className="text-sm font-bold text-muted-foreground mb-3">✨ ฟีเจอร์ใหม่</p>
-        <div className="grid grid-cols-2 gap-3">
-          {newFeatures.map(({ to, emoji, label, sub, gradient, badge }) => (
-            <Link key={to} to={to}
-              className="relative flex flex-col gap-1 p-4 rounded-3xl border-2 border-border bg-card hover:bg-muted transition-all duration-150 active:scale-95 overflow-hidden">
-              <div className={`absolute top-0 right-0 w-16 h-16 rounded-bl-3xl bg-gradient-to-br ${gradient} opacity-10`} />
-              <span className="text-3xl">{emoji}</span>
-              <p className="font-bold text-sm text-foreground mt-1">{label}</p>
-              <p className="text-xs text-muted-foreground">{sub}</p>
-              <span className={`mt-1 self-start text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r ${gradient} text-white`}>{badge}</span>
-            </Link>
-          ))}
         </div>
       </div>
 

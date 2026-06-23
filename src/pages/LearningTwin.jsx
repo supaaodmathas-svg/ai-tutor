@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -133,6 +133,21 @@ export default function LearningTwin() {
     queryFn: () => base44.entities.Quiz.filter({ completed: true, created_by_id: user?.id }, "-created_date", 100),
     enabled: !!user?.id,
   });
+
+  const [autoUpdating, setAutoUpdating] = useState(false);
+
+  // Realtime: auto-rebuild twin when a new quiz is completed
+  useEffect(() => {
+    if (!user?.id) return;
+    const unsubscribe = base44.entities.Quiz.subscribe(async (event) => {
+      if (event.type === "create" && event.data?.completed && event.data?.created_by_id === user.id) {
+        setAutoUpdating(true);
+        await queryClient.invalidateQueries({ queryKey: ["all-quizzes-twin", user?.id] });
+        setAutoUpdating(false);
+      }
+    });
+    return unsubscribe;
+  }, [user?.id]);
 
   const { data: placements = [] } = useQuery({
     queryKey: ["placements-twin", user?.id],

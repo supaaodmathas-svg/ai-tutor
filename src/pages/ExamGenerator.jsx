@@ -190,6 +190,11 @@ export default function ExamGenerator() {
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
 
+  const FREE_USES = 2;
+  const usesCount = user?.exam_gen_uses ?? 0;
+  const isFree = usesCount < FREE_USES;
+  const TOKEN_COST = 50;
+
   const handleFileSelect = async (file) => {
     setUploading(true);
     setFileName(file.name);
@@ -236,17 +241,20 @@ export default function ExamGenerator() {
 
   const generateExam = async () => {
     const count = parseInt(numQuestions);
-    const tokenCost = count * 12;
     const currentTokens = user?.tokens ?? 0;
-    if (currentTokens < tokenCost) {
-      toast({ title: "⚠️ Token ไม่เพียงพอ", description: `ต้องใช้ ${tokenCost} Tokens`, variant: "destructive" });
+    if (!isFree && currentTokens < TOKEN_COST) {
+      toast({ title: "⚠️ Token ไม่เพียงพอ", description: `ต้องใช้ ${TOKEN_COST} Tokens`, variant: "destructive" });
       setTimeout(() => { window.location.href = "/tokens"; }, 2000);
       return;
     }
 
     setGenerating(true);
 
-    await base44.auth.updateMe({ tokens: currentTokens - tokenCost });
+    if (isFree) {
+      await base44.auth.updateMe({ exam_gen_uses: usesCount + 1 });
+    } else {
+      await base44.auth.updateMe({ tokens: currentTokens - TOKEN_COST, exam_gen_uses: usesCount + 1 });
+    }
 
     const typeInstructions = {
       mc4: `ปรนัย 4 ตัวเลือก (choices: 4 รายการ, correct_answer: index 0-3)`,
@@ -438,17 +446,26 @@ export default function ExamGenerator() {
             </Select>
           </div>
 
-          <div className="p-3 rounded-xl bg-secondary/50 text-sm space-y-1">
-            <div className="flex justify-between">
-              <span>ค่าใช้จ่าย</span>
-              <Badge variant="outline">{parseInt(numQuestions) * 12} Tokens</Badge>
-            </div>
-            <div className="flex justify-between">
-              <span>Token คงเหลือ</span>
-              <Badge variant={(user?.tokens ?? 0) >= parseInt(numQuestions) * 12 ? "secondary" : "destructive"}>
-                {user?.tokens ?? 0} Tokens
-              </Badge>
-            </div>
+          <div className={`p-3 rounded-xl text-sm space-y-1 ${isFree ? "bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900" : "bg-secondary/50"}`}>
+            {isFree ? (
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">🎉 ฟรี!</span>
+                <Badge className="bg-emerald-500 text-white border-0">เหลืออีก {FREE_USES - usesCount} ครั้ง</Badge>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between">
+                  <span>ค่าใช้จ่าย</span>
+                  <Badge variant="outline">{TOKEN_COST} Tokens / ครั้ง</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>Token คงเหลือ</span>
+                  <Badge variant={(user?.tokens ?? 0) >= TOKEN_COST ? "secondary" : "destructive"}>
+                    {user?.tokens ?? 0} Tokens
+                  </Badge>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex gap-3">
