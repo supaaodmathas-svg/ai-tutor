@@ -22,42 +22,57 @@ export default function PlacementTest() {
   const [result, setResult] = useState(null);
 
   useEffect(() => {
-    generateQuestions();
+    loadQuestions();
   }, [subject]);
 
-  const generateQuestions = async () => {
+  const loadQuestions = async () => {
     setLoading(true);
-    const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมศึกษาประเทศไทย (ม.1-6) จำนวน 10 ข้อ โดยแบ่งเป็น:
-- Level 1 (ง่ายมาก): 2 ข้อ - ทดสอบความรู้พื้นฐาน
-- Level 2 (ง่าย): 2 ข้อ - ทดสอบความเข้าใจ
-- Level 3 (ปานกลาง): 2 ข้อ - ทดสอบการประยุกต์ใช้
-- Level 4 (ยาก): 2 ข้อ - ทดสอบการวิเคราะห์
-- Level 5 (ยากมาก): 2 ข้อ - ทดสอบการสังเคราะห์และประเมินค่า
 
-แต่ละข้อมี 4 ตัวเลือก (A, B, C, D) พร้อมคำอธิบายเฉลย
-ข้อสอบต้องเป็นภาษาไทย เนื้อหาตรงตามหลักสูตรแกนกลาง`,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          questions: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                level: { type: "number" },
-                question: { type: "string" },
-                choices: { type: "array", items: { type: "string" } },
-                correct_answer: { type: "number", description: "index 0-3" },
-                explanation: { type: "string" }
+    // Try to load from pre-generated bank first
+    const banks = await base44.entities.PlacementTestBank.filter({ subject });
+
+    if (banks && banks.length > 0) {
+      // Pick a random bank from available ones
+      const randomBank = banks[Math.floor(Math.random() * banks.length)];
+      // Shuffle questions within the bank so order differs each time
+      const shuffled = [...randomBank.questions].sort(() => Math.random() - 0.5);
+      setQuestions(shuffled);
+      setAnswers(new Array(shuffled.length).fill(-1));
+    } else {
+      // Fallback: generate on-the-fly if no bank exists
+      const res = await base44.integrations.Core.InvokeLLM({
+        model: 'gemini_3_flash',
+        prompt: `สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมศึกษาประเทศไทย (ม.1-6) จำนวน 10 ข้อ โดยแบ่งเป็น:
+- Level 1 (ง่ายมาก): 2 ข้อ
+- Level 2 (ง่าย): 2 ข้อ
+- Level 3 (ปานกลาง): 2 ข้อ
+- Level 4 (ยาก): 2 ข้อ
+- Level 5 (ยากมาก): 2 ข้อ
+แต่ละข้อมี 4 ตัวเลือก correct_answer คือ index 0-3 เนื้อหาภาษาไทยตามหลักสูตรแกนกลาง`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            questions: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  level: { type: "number" },
+                  question: { type: "string" },
+                  choices: { type: "array", items: { type: "string" } },
+                  correct_answer: { type: "number" },
+                  explanation: { type: "string" }
+                }
               }
             }
           }
-        }
-      },
-    });
-    setQuestions(res.questions || []);
-    setAnswers(new Array(10).fill(-1));
+        },
+      });
+      const qs = res.questions || [];
+      setQuestions(qs);
+      setAnswers(new Array(qs.length).fill(-1));
+    }
+
     setLoading(false);
   };
 
@@ -136,8 +151,8 @@ export default function PlacementTest() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-        <p className="text-lg font-heading font-semibold">กำลังสร้างข้อสอบ...</p>
-        <p className="text-sm text-muted-foreground mt-1">AI กำลังออกแบบข้อสอบวิชา {subject}</p>
+        <p className="text-lg font-heading font-semibold">กำลังโหลดข้อสอบ...</p>
+        <p className="text-sm text-muted-foreground mt-1">วิชา {subject}</p>
       </div>
     );
   }
