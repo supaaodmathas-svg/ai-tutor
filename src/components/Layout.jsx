@@ -66,8 +66,8 @@ export default function Layout() {
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col bg-[hsl(222,35%,12%)] z-40">
         <div className="px-5 py-6 border-b border-white/10">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="px-4 py-2 rounded-full text-white font-bold text-base leading-none" style={{ background: "linear-gradient(135deg, #4F46E5, #9333EA)", boxShadow: "0 0 18px rgba(139,92,246,0.55)" }}>AI</div>
+          <Link to="/" className="flex items-center gap-2">
+            <img src="https://media.base44.com/images/public/6a301ff5fe467608523f8e74/3b86a8beb_ChatGPT_Image_Jun_26_2026_06_33_05_PM.png" alt="Dino Tutor" className="w-12 h-12 rounded-full object-cover" />
             <div>
               <h1 className="font-display font-bold text-base text-white leading-none">Dino Tutor</h1>
               <p className="text-xs text-white/45 font-body mt-0.5">เรียนเร็วกว่าใคร</p>
@@ -100,7 +100,7 @@ export default function Layout() {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 inset-x-0 h-14 bg-[hsl(222,35%,12%)] z-40 flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <div className="px-2.5 py-1 rounded-full text-white font-bold text-xs leading-none" style={{ background: "linear-gradient(135deg, #4F46E5, #9333EA)", boxShadow: "0 0 12px rgba(139,92,246,0.55)" }}>AI</div>
+          <img src="https://media.base44.com/images/public/6a301ff5fe467608523f8e74/3b86a8beb_ChatGPT_Image_Jun_26_2026_06_33_05_PM.png" alt="Dino Tutor" className="w-8 h-8 rounded-full object-cover" />
           <span className="font-display font-bold text-white">Dino Tutor</span>
         </Link>
 
