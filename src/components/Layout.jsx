@@ -69,7 +69,7 @@ export default function Layout() {
           <Link to="/" className="flex items-center gap-3">
             <div className="px-4 py-2 rounded-full text-white font-bold text-base leading-none" style={{ background: "linear-gradient(135deg, #4F46E5, #9333EA)", boxShadow: "0 0 18px rgba(139,92,246,0.55)" }}>AI</div>
             <div>
-              <h1 className="font-display font-bold text-base text-white leading-none">AI Tutor</h1>
+              <h1 className="font-display font-bold text-base text-white leading-none">Dino Tutor</h1>
               <p className="text-xs text-white/45 font-body mt-0.5">เรียนเร็วกว่าใคร</p>
             </div>
           </Link>
@@ -101,7 +101,7 @@ export default function Layout() {
       <header className="lg:hidden fixed top-0 inset-x-0 h-14 bg-[hsl(222,35%,12%)] z-40 flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           <div className="px-2.5 py-1 rounded-full text-white font-bold text-xs leading-none" style={{ background: "linear-gradient(135deg, #4F46E5, #9333EA)", boxShadow: "0 0 12px rgba(139,92,246,0.55)" }}>AI</div>
-          <span className="font-display font-bold text-white">AI Tutor</span>
+          <span className="font-display font-bold text-white">Dino Tutor</span>
         </Link>
 
         <div className="flex items-center gap-2">
