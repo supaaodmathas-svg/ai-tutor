@@ -36,7 +36,7 @@ export default function Login() {
     <AuthLayout
       icon={LogIn}
       title="ยินดีต้อนรับกลับ"
-      subtitle="เข้าสู่ระบบเพื่อใช้งาน AI Tutor"
+      subtitle="เข้าสู่ระบบเพื่อเริ่มต้นการเรียนรู้กับ DINOTutor"
       footer={
         <>
           ยังไม่มีบัญชี?{" "}

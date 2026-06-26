@@ -17,7 +17,11 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
 
         {/* Big dino logo */}
         <div className="relative z-10 flex flex-col items-center text-center">
-          <div className="text-[120px] leading-none drop-shadow-2xl mb-4 select-none">🦕</div>
+          <img
+            src="https://media.base44.com/images/public/6a301ff5fe467608523f8e74/3b86a8beb_ChatGPT_Image_Jun_26_2026_06_33_05_PM.png"
+            alt="DINOTutor Logo"
+            className="w-72 h-72 object-contain drop-shadow-2xl mb-2"
+          />
           <h1 className="text-4xl font-display font-black text-white tracking-tight mb-3">
             DINO<span className="text-yellow-300">Tutor</span>
           </h1>
@@ -46,7 +50,11 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex lg:hidden flex-col items-center mb-8">
-            <div className="text-6xl mb-2">🦕</div>
+            <img
+              src="https://media.base44.com/images/public/6a301ff5fe467608523f8e74/3b86a8beb_ChatGPT_Image_Jun_26_2026_06_33_05_PM.png"
+              alt="DINOTutor Logo"
+              className="w-28 h-28 object-contain mb-1"
+            />
             <span className="font-display font-black text-2xl text-foreground">
               DINO<span className="text-primary">Tutor</span>
             </span>
