@@ -18,6 +18,16 @@
       "type": "boolean",
       "default": false
     },
+    "premium_start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0e27\u0e31\u0e19\u0e17\u0e35\u0e48\u0e40\u0e23\u0e34\u0e48\u0e21\u0e2a\u0e21\u0e31\u0e04\u0e23 AI Pro"
+    },
+    "premium_last_daily_date": {
+      "type": "string",
+      "format": "date",
+      "description": "\u0e27\u0e31\u0e19\u0e2a\u0e38\u0e14\u0e17\u0e49\u0e32\u0e22\u0e17\u0e35\u0e48\u0e44\u0e14\u0e49\u0e23\u0e31\u0e1a daily token \u0e08\u0e32\u0e01 AI Pro"
+    },
     "age": {
       "type": "number"
     },

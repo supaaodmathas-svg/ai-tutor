@@ -93,16 +93,29 @@ export default function Tokens() {
 
   const confirmPayment = async () => {
     setProcessing(true);
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
+
+    let tokensToAdd = selectedPackage.tokens;
+    const updateData = { tokens: (user?.tokens ?? 0) + tokensToAdd };
+
+    if (isPremiumPurchase) {
+      // วันแรกได้ 500 token (แทน 200 จากแพ็กเกจ)
+      tokensToAdd = 500;
+      updateData.tokens = (user?.tokens ?? 0) + tokensToAdd;
+      updateData.is_premium = true;
+      updateData.premium_start_date = now.toISOString();
+      updateData.premium_last_daily_date = todayStr;
+    }
+
     await base44.entities.Transaction.create({
       type: isPremiumPurchase ? "premium_upgrade" : "token_purchase",
       amount: selectedPackage.price,
-      tokens_added: selectedPackage.tokens,
+      tokens_added: tokensToAdd,
       payment_method: paymentMethod,
       status: "completed",
       reference_id: `TXN-${Date.now()}`,
     });
-    const updateData = { tokens: (user?.tokens ?? 0) + selectedPackage.tokens };
-    if (isPremiumPurchase) updateData.is_premium = true;
     await base44.auth.updateMe(updateData);
     setProcessing(false);
     setPaid(true);
@@ -138,9 +151,15 @@ export default function Tokens() {
                 <Zap className="w-8 h-8" />
               </div>
               {user?.is_premium && (
-                <Badge className="bg-amber-400 text-amber-900 text-xs">
-                  <Crown className="w-3 h-3 mr-1" /> PRO
-                </Badge>
+                <div className="text-right">
+                  <Badge className="bg-amber-400 text-amber-900 text-xs mb-1">
+                    <Crown className="w-3 h-3 mr-1" /> PRO
+                  </Badge>
+                  {user?.premium_start_date && (() => {
+                    const daysLeft = 30 - Math.floor((new Date() - new Date(user.premium_start_date)) / (1000 * 60 * 60 * 24));
+                    return <p className="text-xs opacity-75">เหลือ {Math.max(0, daysLeft)} วัน</p>;
+                  })()}
+                </div>
               )}
               {!user?.is_premium && (
                 <Button onClick={handlePremium} size="sm" variant="outline" className="border-amber-400/40 text-amber-200 hover:bg-white/10 text-xs h-7">
@@ -207,15 +226,21 @@ export default function Tokens() {
               <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto">
                 <CheckCircle className="w-8 h-8 text-green-500" />
               </div>
-              <p className="font-heading font-bold text-lg">+{selectedPackage?.tokens} Tokens</p>
-              {isPremiumPurchase && <p className="text-sm text-amber-600">🎉 ยินดีด้วย! คุณเป็น AI Pro แล้ว</p>}
+              <p className="font-heading font-bold text-lg">+{isPremiumPurchase ? 500 : selectedPackage?.tokens} Tokens</p>
+              {isPremiumPurchase && (
+                <div className="space-y-1">
+                  <p className="text-sm text-amber-600 font-semibold">🎉 ยินดีด้วย! คุณเป็น AI Pro แล้ว</p>
+                  <p className="text-xs text-muted-foreground">วันแรก +500 Token · วันถัดไป +100 Token/วัน</p>
+                  <p className="text-xs text-muted-foreground">AI Pro มีอายุ 30 วัน</p>
+                </div>
+              )}
               <p className="text-sm text-muted-foreground">เพิ่ม Token เรียบร้อยแล้ว</p>
               <CountdownClose seconds={3} onClose={closeDialog} />
             </div>
           ) : (
             <div className="space-y-4">
               <div className="text-center p-4 bg-secondary/50 rounded-xl">
-                <p className="text-sm text-muted-foreground">{isPremiumPurchase ? "AI Pro + 200 Tokens" : `${selectedPackage?.tokens} Tokens`}</p>
+                <p className="text-sm text-muted-foreground">{isPremiumPurchase ? "AI Pro · วันแรก 500 + ต่อไป 100/วัน (30 วัน)" : `${selectedPackage?.tokens} Tokens`}</p>
                 <p className="text-4xl font-display font-black mt-1">฿{selectedPackage?.price}</p>
               </div>
 

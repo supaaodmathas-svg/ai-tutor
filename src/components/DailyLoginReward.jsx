@@ -23,6 +23,7 @@ export default function DailyLoginReward({ onClose }) {
   const [claimed, setClaimed] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [probonusEarned, setProbonusEarned] = useState(0);
 
   useEffect(() => {
     loadRecord();
@@ -73,12 +74,36 @@ export default function DailyLoginReward({ onClose }) {
       });
     }
 
-    const currentTokens = user?.tokens ?? 0;
-    await base44.auth.updateMe({ tokens: currentTokens + tokensToAdd });
-    queryClient.invalidateQueries();
+    // AI Pro daily 100 token bonus (วันที่ 2+ จนครบ 30 วัน)
+    let proBonus = 0;
+    const freshUser = await base44.auth.me();
+    if (freshUser?.is_premium && freshUser?.premium_start_date) {
+      const startDate = new Date(freshUser.premium_start_date);
+      const daysPassed = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
+      const premiumExpired = daysPassed >= 30;
+      const alreadyGotToday = freshUser.premium_last_daily_date === todayStr;
 
+      if (premiumExpired) {
+        // หมดอายุ ถอด premium
+        await base44.auth.updateMe({ is_premium: false });
+      } else if (!alreadyGotToday) {
+        proBonus = 100;
+        await base44.auth.updateMe({
+          tokens: (freshUser.tokens ?? 0) + tokensToAdd + proBonus,
+          premium_last_daily_date: todayStr,
+        });
+      } else {
+        await base44.auth.updateMe({ tokens: (freshUser.tokens ?? 0) + tokensToAdd });
+      }
+    } else {
+      const currentTokens = freshUser?.tokens ?? user?.tokens ?? 0;
+      await base44.auth.updateMe({ tokens: currentTokens + tokensToAdd });
+    }
+
+    queryClient.invalidateQueries();
     setClaimed(true);
     setClaiming(false);
+    setProbonusEarned(proBonus);
     setTimeout(() => { window.location.reload(); }, 800);
   };
 
@@ -151,6 +176,9 @@ export default function DailyLoginReward({ onClose }) {
               {claimed ? (
                 <>
                   <p className="text-sm font-bold text-green-600">✅ รับ Token วันนี้แล้ว!</p>
+                  {probonusEarned > 0 && (
+                    <p className="text-xs font-bold text-amber-600 mt-1">👑 +{probonusEarned} Token โบนัส AI Pro!</p>
+                  )}
                   <p className="text-xs text-muted-foreground mt-1">กลับมาพรุ่งนี้เพื่อรับ Token อีกครั้ง</p>
                 </>
               ) : (
