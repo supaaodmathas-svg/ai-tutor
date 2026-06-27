@@ -32,8 +32,6 @@ export default function Practice() {
   const [result, setResult] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
-  const [studyGuide, setStudyGuide] = useState(null);
-  const [loadingGuide, setLoadingGuide] = useState(false);
   const [isRetake, setIsRetake] = useState(false);
 
   // Load saved quiz from URL param (retake — no token cost)
@@ -191,41 +189,6 @@ export default function Practice() {
     setShowExplanation(true);
     setCurrentIndex(0);
 
-    // Generate AI study guide
-    const wrongQuestions = questions.filter((q, i) => answers[i] !== q.correct_answer);
-    setLoadingGuide(true);
-    const guideSummary = wrongQuestions.length > 0 
-      ? `นักเรียนทำข้อสอบวิชา ${selectedSubject} แล้วตอบผิดในข้อต่อไปนี้:\n${wrongQuestions.map((q, i) => `${i + 1}. ${q.question}`).join("\n")}\n\nกรุณาแนะนำแนวทางแก้ไขเป็นภาษาไทยสำหรับแต่ละข้อ โดยระบุ:\n1. จุดที่ต้องปรับปรุง\n2. บทเรียน/หัวข้อที่ควรทบทวน\n3. เคล็ดลับการจำ\nให้กระชับ เข้าใจง่าย เหมาะสำหรับนักเรียนมัธยม`
-      : `นักเรียนทำข้อสอบวิชา ${selectedSubject} ได้ ${result.score}/${result.total_questions} ข้อ กรุณาสร้างแผนการเรียนเพื่อเพิ่มพูนความรู้ให้ลึกขึ้น:\n1. หัวข้อสำคัญที่ควรเรียนเพิ่มเติม\n2. เคล็ดลับการจำและการเข้าใจที่ลึกขึ้น\n3. ข้อแนะนำสำหรับการทดสอบครั้งถัดไป`;
-      const isAIPro2 = currentUser?.is_premium || user?.is_premium;
-      const guideModel = isAIPro2 ? "gpt_5_mini" : "claude_sonnet_4_6";
-      const guideRes = await base44.integrations.Core.InvokeLLM({
-      model: guideModel,
-      prompt: guideSummary,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            overall_advice: { type: "string" },
-            topics_to_review: { type: "array", items: { type: "string" } },
-            study_tips: { type: "array", items: { type: "string" } },
-            per_question: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  question_summary: { type: "string" },
-                  fix_advice: { type: "string" },
-                  chapter_to_read: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-    });
-    setStudyGuide(guideRes);
-    setLoadingGuide(false);
-
-
   };
 
   const reset = () => {
@@ -235,7 +198,6 @@ export default function Practice() {
     setQuestions([]);
     setResult(null);
     setShowExplanation(false);
-    setStudyGuide(null);
     setIsRetake(false);
     // Remove savedQuizId from URL
     const url = new URL(window.location.href);
@@ -457,98 +419,7 @@ export default function Practice() {
             />
           ))}
 
-          {/* AI Study Guide */}
-          {loadingGuide && (
-            <div className="flex items-center gap-3 p-5 bg-purple-50 border-2 border-purple-200 rounded-3xl">
-              <Loader2 className="w-5 h-5 text-primary animate-spin flex-shrink-0" />
-              <p className="text-sm font-semibold text-primary">AI กำลังวิเคราะห์และสร้างแผนการเรียน...</p>
-            </div>
-          )}
 
-          {studyGuide && (
-            <div className="space-y-4">
-              {/* Main Header */}
-              <div className="bg-teal-600 dark:bg-teal-700 text-white rounded-2xl p-5">
-                <h3 className="font-display font-bold text-lg flex items-center gap-2">📚 แผนการแก้ไขจาก AI</h3>
-              </div>
-
-              {/* Overview */}
-              {studyGuide.overall_advice && (
-                <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
-                  <div className="bg-teal-100 dark:bg-teal-900/30 p-4 border-b border-gray-200 dark:border-border">
-                    <p className="text-sm font-bold text-teal-700 dark:text-teal-400">🎯 ภาพรวม</p>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-sm text-foreground">{studyGuide.overall_advice}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Two Column Layout */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Topics to Review */}
-                {studyGuide.topics_to_review?.length > 0 && (
-                  <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
-                    <div className="bg-teal-100 dark:bg-teal-900/30 p-4 border-b border-gray-200 dark:border-border">
-                      <p className="text-sm font-bold text-teal-700 dark:text-teal-400">📖 บทที่ควรทบทวน</p>
-                    </div>
-                    <div className="p-5 space-y-2">
-                      {studyGuide.topics_to_review.map((t, i) => (
-                        <div key={i} className="flex gap-2 text-sm">
-                          <span className="text-teal-600 dark:text-teal-400 font-bold">•</span>
-                          <span className="text-foreground">{t}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Study Tips */}
-                {studyGuide.study_tips?.length > 0 && (
-                  <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
-                    <div className="bg-teal-100 dark:bg-teal-900/30 p-4 border-b border-gray-200 dark:border-border">
-                      <p className="text-sm font-bold text-teal-700 dark:text-teal-400">💡 เคล็ดลับการจำ</p>
-                    </div>
-                    <div className="p-5 space-y-2">
-                      {studyGuide.study_tips.map((tip, i) => (
-                        <div key={i} className="flex gap-2 text-sm">
-                          <span className="text-teal-600 dark:text-teal-400 font-bold">•</span>
-                          <span className="text-foreground">{tip}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Wrong Questions (Expandable) */}
-              {studyGuide.per_question?.length > 0 && (
-                <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border overflow-hidden">
-                  <details className="group">
-                    <summary className="bg-red-50 dark:bg-red-900/20 p-5 cursor-pointer flex items-center justify-between border-b border-gray-200 dark:border-border hover:bg-red-100 dark:hover:bg-red-900/30 transition">
-                      <p className="text-sm font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
-                        ❌ ข้อที่ทำผิด
-                      </p>
-                      <svg className="w-5 h-5 text-red-600 dark:text-red-400 transform group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                      </svg>
-                    </summary>
-                    <div className="p-5 space-y-4">
-                      {studyGuide.per_question.map((pq, i) => (
-                        <div key={i} className="border-l-4 border-red-400 dark:border-red-600 pl-4 py-2">
-                          <p className="text-xs font-bold text-red-600 dark:text-red-400 mb-1">{pq.question_summary}</p>
-                          <p className="text-sm text-foreground mb-2">{pq.fix_advice}</p>
-                          {pq.chapter_to_read && (
-                            <p className="text-xs text-teal-600 dark:text-teal-400 font-semibold">📗 {pq.chapter_to_read}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </>
     );
