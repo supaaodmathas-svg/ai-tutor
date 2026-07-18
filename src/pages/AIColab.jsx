@@ -54,10 +54,6 @@ export default function AIColab() {
   };
 
   const handleAccessCode = () => {
-    if (!accessCode.trim()) {
-      toast({ title: "กรุณากรอกรหัส", variant: "destructive" });
-      return;
-    }
     loadInstitutions();
     setStep("register");
   };
