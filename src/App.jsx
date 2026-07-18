@@ -23,6 +23,7 @@ import Tokens from '@/pages/Tokens';
 import Profile from '@/pages/Profile';
 import LearningTwin from '@/pages/LearningTwin';
 import ExamGenerator from '@/pages/ExamGenerator';
+import AIColab from '@/pages/AIColab';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/learning-twin" element={<LearningTwin />} />
           <Route path="/exam-generator" element={<ExamGenerator />} />
+          <Route path="/ai-colab" element={<AIColab />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

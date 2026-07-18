@@ -1,0 +1,21 @@
+{
+  "name": "Institution",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "\u0e0a\u0e37\u0e48\u0e2d\u0e2a\u0e16\u0e32\u0e1a\u0e31\u0e19"
+    },
+    "description": {
+      "type": "string",
+      "description": "\u0e04\u0e33\u0e2d\u0e18\u0e34\u0e1a\u0e32\u0e22\u0e2a\u0e16\u0e32\u0e1a\u0e31\u0e19"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "\u0e42\u0e25\u0e42\u0e01\u0e49\u0e2a\u0e16\u0e32\u0e1a\u0e31\u0e19 (URL)"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

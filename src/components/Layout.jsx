@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Home, BookOpen, Trophy, CreditCard, User, LogOut, Menu,
-  Swords, FlaskConical, Sun, Moon, Brain, FileText } from
+  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2 } from
 "lucide-react";
 
 const navItems = [
@@ -15,6 +15,7 @@ const navItems = [
 { path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical, emoji: "✏️" },
 { path: "/learning-twin", label: "AI Learning Twin", icon: Brain, emoji: "🤖" },
 { path: "/exam-generator", label: "AI Exam Generator", icon: FileText, emoji: "📄" },
+{ path: "/ai-colab", label: "AI Colab", icon: Building2, emoji: "🏛️" },
 { path: "/battle", label: "แข่งขัน", icon: Swords, emoji: "⚔️" },
 { path: "/tournament", label: "Tournament", icon: Trophy, emoji: "🏆" },
 { path: "/tokens", label: "เติม Token", icon: CreditCard, emoji: "💎" },

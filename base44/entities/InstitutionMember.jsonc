@@ -1,0 +1,38 @@
+{
+  "name": "InstitutionMember",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "ID \u0e02\u0e2d\u0e07\u0e2a\u0e16\u0e32\u0e1a\u0e31\u0e19"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "\u0e0a\u0e37\u0e48\u0e2d\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e17\u0e35\u0e48\u0e1c\u0e39\u0e01\u0e01\u0e31\u0e1a\u0e2a\u0e16\u0e32\u0e1a\u0e31\u0e19"
+    },
+    "student_code": {
+      "type": "string",
+      "description": "\u0e23\u0e2b\u0e31\u0e2a\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e16\u0e32\u0e1a\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e43\u0e2b\u0e49"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID \u0e1c\u0e39\u0e49\u0e43\u0e0a\u0e49 Dino Tutor \u0e17\u0e35\u0e48\u0e1c\u0e39\u0e01\u0e41\u0e25\u0e49\u0e27 (\u0e27\u0e48\u0e32\u0e07 = \u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e1c\u0e39\u0e01)"
+    },
+    "course_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0e23\u0e32\u0e22\u0e01\u0e32\u0e23 Course \u0e17\u0e35\u0e48\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e2a\u0e21\u0e31\u0e04\u0e23\u0e44\u0e27\u0e49"
+    },
+    "joined_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "institution_id",
+    "student_name",
+    "student_code"
+  ]
+}
