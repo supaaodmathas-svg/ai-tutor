@@ -54,12 +54,12 @@ export default function AIColab() {
   };
 
   const handleAccessCode = () => {
-    if (accessCode.trim() === COLAB_ACCESS_CODE) {
-      loadInstitutions();
-      setStep("register");
-    } else {
-      toast({ title: "❌ รหัสไม่ถูกต้อง", description: "กรุณาตรวจสอบรหัสจากสถาบันของคุณ", variant: "destructive" });
+    if (!accessCode.trim()) {
+      toast({ title: "กรุณากรอกรหัส", variant: "destructive" });
+      return;
     }
+    loadInstitutions();
+    setStep("register");
   };
 
   const loadInstitutions = async () => {
@@ -152,7 +152,7 @@ export default function AIColab() {
           <Input
             value={accessCode}
             onChange={(e) => setAccessCode(e.target.value)}
-            placeholder="เช่น Dino Tutor99"
+            placeholder="ใส่รหัสอะไรก็ได้"
             onKeyDown={(e) => e.key === "Enter" && handleAccessCode()}
           />
           <Button onClick={handleAccessCode} className="w-full">
