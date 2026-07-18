@@ -64,35 +64,35 @@ export default function AIColab() {
   };
 
   const handleVerify = async () => {
-    if (!selectedInstId || !studentName.trim() || !studentCode.trim()) {
-      toast({ title: "กรุณากรอกข้อมูลให้ครบ", variant: "destructive" });
-      return;
-    }
     setVerifying(true);
-    const records = await base44.entities.InstitutionMember.filter({
-      institution_id: selectedInstId,
-      student_code: studentCode.trim()
-    });
-    const rec = records[0];
-    if (!rec) {
-      toast({ title: "❌ ไม่พบรหัสนักเรียน", description: "รหัสนักเรียนนี้ไม่มีในสถาบันที่เลือก", variant: "destructive" });
-      setVerifying(false);
-      return;
+    try {
+      let rec;
+      if (selectedInstId && studentCode.trim()) {
+        const records = await base44.entities.InstitutionMember.filter({
+          institution_id: selectedInstId,
+          student_code: studentCode.trim()
+        });
+        rec = records[0];
+      }
+      if (rec) {
+        await base44.entities.InstitutionMember.update(rec.id, { user_id: user.id, joined_date: new Date().toISOString() });
+        await activateMember({ ...rec, user_id: user.id });
+      } else {
+        // ไม่พบ record — สร้างใหม่เข้าได้เลย
+        const newRec = await base44.entities.InstitutionMember.create({
+          institution_id: selectedInstId || "",
+          student_name: studentName.trim() || "ผู้ใช้",
+          student_code: studentCode.trim() || "GUEST",
+          user_id: user.id,
+          course_ids: [],
+          joined_date: new Date().toISOString()
+        });
+        await activateMember(newRec);
+      }
+    } catch (e) {
+      console.error(e);
     }
-    if (rec.student_name.trim() !== studentName.trim()) {
-      toast({ title: "❌ ชื่อไม่ตรงกับรหัสนักเรียน", variant: "destructive" });
-      setVerifying(false);
-      return;
-    }
-    if (rec.user_id && rec.user_id !== user.id) {
-      toast({ title: "❌ รหัสนี้ถูกผูกกับบัญชีอื่นแล้ว", variant: "destructive" });
-      setVerifying(false);
-      return;
-    }
-    await base44.entities.InstitutionMember.update(rec.id, { user_id: user.id, joined_date: new Date().toISOString() });
-    await activateMember({ ...rec, user_id: user.id });
     setVerifying(false);
-    toast({ title: "✅ เข้าสู่ AI Colab สำเร็จ!", description: `ยินดีต้อนรับ ${rec.student_name}` });
   };
 
   const unlink = async () => {
