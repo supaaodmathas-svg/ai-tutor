@@ -11,7 +11,8 @@ import { motion } from "framer-motion";
 import StudentStatDialog from "@/components/teacher/StudentStatDialog";
 import CreateClassroomQuizDialog from "@/components/teacher/CreateClassroomQuizDialog";
 import ClassroomQuizHost from "@/components/teacher/ClassroomQuizHost";
-import { Gamepad2 } from "lucide-react";
+import TeacherTypeSelection from "@/components/teacher/TeacherTypeSelection";
+import { Gamepad2, School, BookOpenCheck, RefreshCw } from "lucide-react";
 
 export default function TeacherDashboard() {
   const { user, checkUserAuth } = useAuth();
@@ -146,6 +147,17 @@ export default function TeacherDashboard() {
     );
   }
 
+  // No teacher institution type selected yet → choose first
+  if (!user?.teacher_institution_type) {
+    return <TeacherTypeSelection />;
+  }
+
+  const teacherType = user.teacher_institution_type;
+  const resetTeacherType = async () => {
+    await base44.auth.updateMe({ teacher_institution_type: null });
+    await checkUserAuth();
+  };
+
   // No linked institution yet → access code gate
   if (!linkedInstId) {
     return (
@@ -196,6 +208,14 @@ export default function TeacherDashboard() {
           <p className="text-sm text-muted-foreground">
             {institution ? `${institution.name} · ครู ${user?.full_name || user?.email}` : "กำลังโหลดสถาบัน..."}
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className={teacherType === "school" ? "border-primary text-primary" : "border-accent text-accent"}>
+            {teacherType === "school" ? <><School className="w-3 h-3 mr-1" /> สถาบันศึกษา</> : <><BookOpenCheck className="w-3 h-3 mr-1" /> สถาบันกวดวิชา</>}
+          </Badge>
+          <Button variant="ghost" size="sm" onClick={resetTeacherType} title="เปลี่ยนประเภทสถาบัน">
+            <RefreshCw className="w-4 h-4" />
+          </Button>
         </div>
       </div>
 
