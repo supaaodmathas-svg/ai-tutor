@@ -12,6 +12,9 @@ import StudentStatDialog from "@/components/teacher/StudentStatDialog";
 import CreateClassroomQuizDialog from "@/components/teacher/CreateClassroomQuizDialog";
 import ClassroomQuizHost from "@/components/teacher/ClassroomQuizHost";
 import TeacherTypeSelection from "@/components/teacher/TeacherTypeSelection";
+import TeachingSubjectSelection from "@/components/teacher/TeachingSubjectSelection";
+import SchoolDashboard from "@/components/teacher/SchoolDashboard";
+import { SCHOOL_ACCESS_CODE } from "@/lib/teachingSchedule";
 import { Gamepad2, School, BookOpenCheck, RefreshCw } from "lucide-react";
 
 export default function TeacherDashboard() {
@@ -38,7 +41,8 @@ export default function TeacherDashboard() {
 
   useEffect(() => {
     (async () => {
-      if (linkedInstId) {
+      // ครูสถาบันศึกษาไม่ต้องโหลดข้อมูลสถาบันจาก DB
+      if (linkedInstId && user?.teacher_institution_type === "tutoring") {
         await loadDashboard(linkedInstId);
       }
       setLoading(false);
@@ -94,6 +98,18 @@ export default function TeacherDashboard() {
     setVerifying(true);
     setCodeError("");
     try {
+      // ครูสถาบันศึกษาใช้รหัสสมมุติ "123"
+      if (teacherType === "school") {
+        if (codeInput.trim() !== SCHOOL_ACCESS_CODE) {
+          setCodeError("รหัสไม่ถูกต้อง (สมมุติ 123)");
+          setVerifying(false);
+          return;
+        }
+        await base44.auth.updateMe({ teacher_institution_id: "school_demo" });
+        setCodeInput("");
+        await checkUserAuth();
+        return;
+      }
       const insts = await base44.entities.Institution.list();
       const matched = insts.find(
         (i) => i.access_code && i.access_code === codeInput.trim()
@@ -154,9 +170,24 @@ export default function TeacherDashboard() {
 
   const teacherType = user.teacher_institution_type;
   const resetTeacherType = async () => {
-    await base44.auth.updateMe({ teacher_institution_type: null });
+    await base44.auth.updateMe({ teacher_institution_type: null, teaching_subject: null });
     await checkUserAuth();
   };
+
+  // สถาบันศึกษา → เลือกวิชาก่อน
+  if (teacherType === "school" && !user?.teaching_subject) {
+    return <TeachingSubjectSelection />;
+  }
+
+  const resetSubject = async () => {
+    await base44.auth.updateMe({ teaching_subject: null, teacher_institution_id: null });
+    await checkUserAuth();
+  };
+
+  // สถาบันศึกษา → ผ่าน gate แล้ว → แสดง SchoolDashboard
+  if (teacherType === "school" && linkedInstId === "school_demo") {
+    return <SchoolDashboard user={user} onResetSubject={resetSubject} onResetType={resetTeacherType} />;
+  }
 
   // No linked institution yet → access code gate
   if (!linkedInstId) {
@@ -166,9 +197,13 @@ export default function TeacherDashboard() {
           <div className="w-16 h-16 rounded-2xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
             <KeyRound className="w-8 h-8 text-accent" />
           </div>
-          <h1 className="text-2xl font-display font-bold">กรอกรหัสสถาบัน</h1>
+          <h1 className="text-2xl font-display font-bold">
+            {teacherType === "school" ? "กรอกรหัสเข้าแดชบอร์ด" : "กรอกรหัสสถาบัน"}
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            กรุณากรอกรหัสที่ได้รับหลังจากซื้อไลเซนส์เพื่อเข้าถึงข้อมูลสถาบันของคุณ
+            {teacherType === "school"
+              ? `กรุณากรอกรหัสสมมุติ "${SCHOOL_ACCESS_CODE}" เพื่อเข้าถึงตารางคาบสอนของคุณ`
+              : "กรุณากรอกรหัสที่ได้รับหลังจากซื้อไลเซนส์เพื่อเข้าถึงข้อมูลสถาบันของคุณ"}
           </p>
         </div>
         <Card className="p-6 border-0 shadow-lg space-y-4">
@@ -179,7 +214,7 @@ export default function TeacherDashboard() {
             <Input
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
-              placeholder="เช่น tutor45"
+              placeholder={teacherType === "school" ? "123" : "เช่น tutor45"}
               className="h-12 text-center text-lg font-mono tracking-wider"
               autoFocus
             />
