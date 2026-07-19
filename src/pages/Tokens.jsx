@@ -16,9 +16,9 @@ const TRUEWALLET_LINK = "https://gift.truemoney.com/campaign/?v=XXXXXXXXXX";
 const tokenPackages = [
   {
     tokens: 200,
-    price: 40,
+    price: 49,
     label: "Starter",
-    perToken: "0.20",
+    perToken: "0.24",
     popular: false,
     color: "from-blue-500 to-blue-600",
     bgLight: "from-blue-50 to-blue-100",
@@ -26,9 +26,9 @@ const tokenPackages = [
   },
   {
     tokens: 450,
-    price: 90,
+    price: 99,
     label: "Popular",
-    perToken: "0.20",
+    perToken: "0.22",
     popular: true,
     color: "from-primary to-accent",
     bgLight: "from-violet-50 to-sky-50",
