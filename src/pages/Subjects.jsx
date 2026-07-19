@@ -5,6 +5,8 @@ import { BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 
 const subjects = [
+"คณิตศาสตร์",
+"วิทยาศาสตร์",
 "คณิตศาสตร์ 1",
 "คณิตศาสตร์ 2",
 "ฟิสิกส์",

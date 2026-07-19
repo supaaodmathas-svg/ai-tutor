@@ -7,7 +7,7 @@ import { Crown } from "lucide-react";
 import DailyLoginReward from "@/components/DailyLoginReward";
 import SavedQuizzes from "@/components/SavedQuizzes";
 
-const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
+const subjects = ["คณิตศาสตร์", "วิทยาศาสตร์", "คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
 const quickLinks = [
   { to: "/subjects", label: "ทดสอบวัดระดับตัวเอง", sub: "Placement Test ฟรี!", emoji: "📝" },

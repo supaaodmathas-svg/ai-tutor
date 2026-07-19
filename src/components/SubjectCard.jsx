@@ -15,6 +15,8 @@ const aLevelSubjects = [
 ];
 
 const subjectConfig = {
+  "คณิตศาสตร์": { emoji: "🔢", gradient: "from-blue-400 to-cyan-500", bg: "bg-cyan-50" },
+  "วิทยาศาสตร์": { emoji: "🔬", gradient: "from-green-400 to-teal-500", bg: "bg-green-50" },
   "คณิตศาสตร์ 1": { emoji: "📐", gradient: "from-blue-500 to-indigo-600", bg: "bg-blue-50" },
   "คณิตศาสตร์ 2": { emoji: "📊", gradient: "from-indigo-500 to-purple-600", bg: "bg-indigo-50" },
   "ฟิสิกส์": { emoji: "⚛️", gradient: "from-orange-500 to-red-500", bg: "bg-orange-50" },
