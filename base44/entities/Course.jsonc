@@ -14,6 +14,10 @@
       "type": "string",
       "description": "\u0e27\u0e34\u0e0a\u0e32"
     },
+    "department": {
+      "type": "string",
+      "description": "\u0e20\u0e32\u0e04\u0e27\u0e34\u0e0a\u0e32"
+    },
     "description": {
       "type": "string"
     },
