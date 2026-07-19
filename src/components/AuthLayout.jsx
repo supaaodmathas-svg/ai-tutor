@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
+export default function AuthLayout({ icon: Icon, title, subtitle, footer, children, videoBg }) {
   return (
     <div className="min-h-screen flex bg-background">
       {/* Left decorative panel — hidden on mobile */}
@@ -9,6 +9,24 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
         className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 relative overflow-hidden"
         style={{ background: "linear-gradient(135deg, #3730a3 0%, #4F46E5 40%, #7c3aed 100%)" }}
       >
+        {/* Background video */}
+        {videoBg && (
+          <video
+            src={videoBg}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        {/* Gradient overlay for readability over video */}
+        {videoBg && (
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(135deg, rgba(55,48,163,0.72) 0%, rgba(79,70,229,0.66) 40%, rgba(124,58,237,0.72) 100%)" }}
+          />
+        )}
         {/* Decorative blobs */}
         <div className="absolute top-[-80px] left-[-80px] w-72 h-72 rounded-full opacity-20"
           style={{ background: "radial-gradient(circle, #a78bfa, transparent)" }} />

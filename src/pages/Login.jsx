@@ -51,6 +51,7 @@ export default function Login() {
       icon={isTeacher ? Building2 : LogIn}
       title={isTeacher ? "เข้าสู่ระบบสำหรับครู" : "ยินดีต้อนรับกลับ"}
       subtitle={isTeacher ? "เข้าสู่ระบบเพื่อดูสถิตินักเรียนของคุณ" : "เข้าสู่ระบบเพื่อเริ่มต้นการเรียนรู้กับ DINOTutor"}
+      videoBg="https://media.base44.com/videos/public/6a301ff5fe467608523f8e74/8f2d7b5cb_5409007-hd_1080_1920_30fps.mp4"
       footer={
         <>
           <button
