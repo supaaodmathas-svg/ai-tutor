@@ -6,25 +6,25 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Home, BookOpen, Trophy, CreditCard, User, LogOut, Menu,
-  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2, Lock } from
+  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2, Lock, LayoutDashboard } from
 "lucide-react";
 
 const studentItems = [
-{ path: "/", label: "หน้าหลัก", icon: Home, emoji: "🏠" },
-{ path: "/subjects", label: "มาทดสอบระดับวิชากันหน่อย!", icon: BookOpen, emoji: "📚" },
-{ path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical, emoji: "✏️" },
-{ path: "/learning-twin", label: "AI Learning Twin", icon: Brain, emoji: "🤖" },
-{ path: "/exam-generator", label: "AI Exam Generator", icon: FileText, emoji: "📄" },
-{ path: "/ai-colab", label: "AI Colab", icon: Building2, emoji: "🏛️" },
-{ path: "/classroom", label: "ห้องเรียนสด", icon: Gamepad2, emoji: "🎮" },
-{ path: "/battle", label: "แข่งขัน", icon: Swords, emoji: "⚔️" },
-{ path: "/tournament", label: "Tournament", icon: Trophy, emoji: "🏆" },
-{ path: "/tokens", label: "เติม Token", icon: CreditCard, emoji: "💎" },
-{ path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" }];
+{ path: "/", label: "หน้าหลัก", icon: Home },
+{ path: "/subjects", label: "วัดระดับวิชา", icon: BookOpen },
+{ path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical },
+{ path: "/learning-twin", label: "AI Learning Twin", icon: Brain },
+{ path: "/exam-generator", label: "Exam Generator", icon: FileText },
+{ path: "/ai-colab", label: "AI Colab", icon: Building2 },
+{ path: "/classroom", label: "ห้องเรียนสด", icon: Gamepad2 },
+{ path: "/battle", label: "Quiz Battle", icon: Swords },
+{ path: "/tournament", label: "Tournament", icon: Trophy },
+{ path: "/tokens", label: "เติม Token", icon: CreditCard },
+{ path: "/profile", label: "โปรไฟล์", icon: User }];
 
 const teacherItems = [
-{ path: "/teacher-dashboard", label: "Teacher Dashboard", icon: Home, emoji: "📊" },
-{ path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" }];
+{ path: "/teacher-dashboard", label: "Teacher Dashboard", icon: LayoutDashboard },
+{ path: "/profile", label: "โปรไฟล์", icon: User }];
 
 
 function NavLink({ item, onClick, disabled }) {
@@ -36,7 +36,7 @@ function NavLink({ item, onClick, disabled }) {
       <div
         title="เฉพาะบัญชีครู"
         className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold opacity-40 cursor-not-allowed text-white/55">
-        <span className="text-base">{item.emoji}</span>
+        <item.icon className="w-4 h-4 shrink-0" />
         {item.label}
         <Lock className="w-3.5 h-3.5 ml-auto" />
       </div>
@@ -53,7 +53,7 @@ function NavLink({ item, onClick, disabled }) {
       "text-white/55 hover:bg-white/8 hover:text-white"}`
       }>
       
-      <span className="text-base">{item.emoji}</span>
+      <item.icon className="w-4 h-4 shrink-0" />
       {item.label}
     </Link>);
 
@@ -81,7 +81,7 @@ export default function Layout() {
   // ครู: เห็นเฉพาะเมนูครู | นักเรียน: เห็นเมนูนักเรียน + ปุ่ม Teacher Dashboard ล็อกไว้
   const navItems = isTeacher
     ? teacherItems
-    : [...studentItems, { path: "/teacher-dashboard", label: "Teacher Dashboard", emoji: "📊", teacherOnly: true }];
+    : [...studentItems, { path: "/teacher-dashboard", label: "Teacher Dashboard", icon: LayoutDashboard, teacherOnly: true }];
 
   return (
     <div className="min-h-screen bg-background">
