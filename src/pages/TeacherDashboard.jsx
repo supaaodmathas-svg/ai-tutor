@@ -10,7 +10,7 @@ import { Loader2, Building2, Users, BookOpen, TrendingUp, Award, Search, KeyRoun
 import { motion } from "framer-motion";
 
 export default function TeacherDashboard() {
-  const { user } = useAuth();
+  const { user, checkUserAuth } = useAuth();
   const [loading, setLoading] = useState(true);
   const [institution, setInstitution] = useState(null);
   const [members, setMembers] = useState([]);
@@ -81,6 +81,7 @@ export default function TeacherDashboard() {
       }
       await base44.auth.updateMe({ teacher_institution_id: matched.id });
       setCodeInput("");
+      await checkUserAuth();
       await loadDashboard(matched.id);
     } catch (err) {
       setCodeError(err.message || "เกิดข้อผิดพลาด");
