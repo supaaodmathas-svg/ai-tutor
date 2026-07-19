@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import RoleSelection from '@/pages/RoleSelection';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -24,6 +25,7 @@ import Profile from '@/pages/Profile';
 import LearningTwin from '@/pages/LearningTwin';
 import ExamGenerator from '@/pages/ExamGenerator';
 import AIColab from '@/pages/AIColab';
+import TeacherDashboard from '@/pages/TeacherDashboard';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -51,11 +53,12 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
+      <Route path="/select-role" element={<RoleSelection />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/select-role" replace />} />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/subjects" element={<Subjects />} />
@@ -68,6 +71,7 @@ const AuthenticatedApp = () => {
           <Route path="/learning-twin" element={<LearningTwin />} />
           <Route path="/exam-generator" element={<ExamGenerator />} />
           <Route path="/ai-colab" element={<AIColab />} />
+          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

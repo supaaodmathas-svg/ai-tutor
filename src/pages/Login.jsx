@@ -1,18 +1,30 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
+import { LogIn, Mail, Lock, Loader2, GraduationCap, Building2, ArrowLeft } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get("role") || localStorage.getItem("selectedRole") || "student";
+  const isTeacher = role === "teacher";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const persistRole = async () => {
+    try {
+      await base44.auth.updateMe({ user_type: role });
+    } catch (e) {
+      console.error("role update failed", e);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +32,8 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
-      window.location.href = "/";
+      await persistRole();
+      window.location.href = isTeacher ? "/teacher-dashboard" : "/";
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {
@@ -29,20 +42,29 @@ export default function Login() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", "/");
+    localStorage.setItem("selectedRole", role);
+    base44.auth.loginWithProvider("google", isTeacher ? "/teacher-dashboard" : "/");
   };
 
   return (
     <AuthLayout
-      icon={LogIn}
-      title="ยินดีต้อนรับกลับ"
-      subtitle="เข้าสู่ระบบเพื่อเริ่มต้นการเรียนรู้กับ DINOTutor"
+      icon={isTeacher ? Building2 : LogIn}
+      title={isTeacher ? "เข้าสู่ระบบสำหรับครู" : "ยินดีต้อนรับกลับ"}
+      subtitle={isTeacher ? "เข้าสู่ระบบเพื่อดูสถิตินักเรียนของคุณ" : "เข้าสู่ระบบเพื่อเริ่มต้นการเรียนรู้กับ DINOTutor"}
       footer={
         <>
-          ยังไม่มีบัญชี?{" "}
-          <Link to="/register" className="text-primary font-medium hover:underline">
-            สมัครสมาชิก
-          </Link>
+          <button
+            onClick={() => navigate("/select-role")}
+            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 mb-2"
+          >
+            <ArrowLeft className="w-3 h-3" /> เปลี่ยนสถานะผู้ใช้
+          </button>
+          <div>
+            ยังไม่มีบัญชี?{" "}
+            <Link to="/register" className="text-primary font-medium hover:underline">
+              สมัครสมาชิก
+            </Link>
+          </div>
         </>
       }
     >

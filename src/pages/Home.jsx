@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Crown } from "lucide-react";
@@ -42,6 +42,10 @@ export default function Home() {
     queryFn: () => base44.entities.Quiz.filter({ completed: true, created_by_id: user?.id }, "-created_date", 5),
     enabled: !!user?.id,
   });
+
+  if (user?.user_type === "teacher") {
+    return <Navigate to="/teacher-dashboard" replace />;
+  }
 
   const subjectLevels = user?.subject_levels || {};
 

@@ -9,7 +9,7 @@ import {
   Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2 } from
 "lucide-react";
 
-const navItems = [
+const studentItems = [
 { path: "/", label: "หน้าหลัก", icon: Home, emoji: "🏠" },
 { path: "/subjects", label: "มาทดสอบระดับวิชากันหน่อย!", icon: BookOpen, emoji: "📚" },
 { path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical, emoji: "✏️" },
@@ -19,6 +19,10 @@ const navItems = [
 { path: "/battle", label: "แข่งขัน", icon: Swords, emoji: "⚔️" },
 { path: "/tournament", label: "Tournament", icon: Trophy, emoji: "🏆" },
 { path: "/tokens", label: "เติม Token", icon: CreditCard, emoji: "💎" },
+{ path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" }];
+
+const teacherItems = [
+{ path: "/teacher-dashboard", label: "Teacher Dashboard", icon: Home, emoji: "📊" },
 { path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" }];
 
 
@@ -60,6 +64,7 @@ function ThemeToggle({ className = "" }) {
 export default function Layout() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const navItems = user?.user_type === "teacher" ? teacherItems : studentItems;
 
   return (
     <div className="min-h-screen bg-background">
