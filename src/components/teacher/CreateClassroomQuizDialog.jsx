@@ -27,7 +27,7 @@ export default function CreateClassroomQuizDialog({ open, onOpenChange, teacher,
       const res = await base44.integrations.Core.InvokeLLM({
         prompt: `${AI_TUTOR_RULES}
 สร้างข้อสอบวิชา ${subject} ระดับชั้น ${grade} ${topic ? `หัวข้อ ${topic}` : "รวมทุกเนื้อหาในหลักสูตร"}
-จำนวน ${count} ข้อ ใช้ภาษาไทย ระดับความยากปานกลาง สำหรับเล่นเกมในห้องเรียนสไตล์ Kahoot
+จำนวน ${count} ข้อ ใช้ภาษาไทย ระดับความยากปานกลาง สำหรับเล่นเกมควิซในห้องเรียน
 กฎเข้มงวด:
 - ส่งกลับ questions array ที่มีสมาชิก ${count} รายการพอดี
 - แต่ละข้อมี choices อาร์เรย์ 4 รายการเสมอ

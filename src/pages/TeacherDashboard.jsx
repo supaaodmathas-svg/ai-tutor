@@ -249,7 +249,7 @@ export default function TeacherDashboard() {
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-primary">
           <Gamepad2 className="w-5 h-5" />
-          <h2 className="font-display font-semibold">ห้องเรียนสด (Kahoot)</h2>
+          <h2 className="font-display font-semibold">ห้องเรียนสด (เกมควิซ)</h2>
         </div>
         {activeRoom ? (
           <ClassroomQuizHost room={activeRoom} onClose={() => setActiveRoom(null)} />
@@ -257,7 +257,7 @@ export default function TeacherDashboard() {
           <Card className="p-6 border-0 shadow text-center space-y-3">
             <Gamepad2 className="w-10 h-10 text-primary mx-auto" />
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              สร้างห้องเรียนสดให้นักเรียนเล่นข้อสอบชุดเดียวกันแบบแข่งขันสไตล์ Kahoot — ฟรี! นักเรียนไม่เสีย Token
+              สร้างห้องเรียนสดให้นักเรียนเล่นข้อสอบชุดเดียวกันแบบแข่งขันเกมควิซ — ฟรี! นักเรียนไม่เสีย Token
             </p>
             <Button onClick={() => setShowCreate(true)} className="bg-gradient-to-r from-primary to-accent">
               <Gamepad2 className="w-4 h-4 mr-2" /> สร้างห้องใหม่
