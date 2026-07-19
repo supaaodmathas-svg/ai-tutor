@@ -17,7 +17,10 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
             loop
             muted
             playsInline
+            preload="auto"
+            poster="https://media.base44.com/images/public/6a301ff5fe467608523f8e74/3b86a8beb_ChatGPT_Image_Jun_26_2026_06_33_05_PM.png"
             className="absolute inset-0 w-full h-full object-cover"
+            onLoadedData={(e) => { e.target.play().catch(() => {}); }}
           />
         )}
         {/* Gradient overlay for readability over video */}

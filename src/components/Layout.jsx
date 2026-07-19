@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Home, BookOpen, Trophy, CreditCard, User, LogOut, Menu,
-  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2 } from
+  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2, Lock } from
 "lucide-react";
 
 const studentItems = [
@@ -27,9 +27,21 @@ const teacherItems = [
 { path: "/profile", label: "โปรไฟล์", icon: User, emoji: "👤" }];
 
 
-function NavLink({ item, onClick }) {
+function NavLink({ item, onClick, disabled }) {
   const location = useLocation();
   const isActive = location.pathname === item.path;
+
+  if (disabled) {
+    return (
+      <div
+        title="เฉพาะบัญชีครู"
+        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold opacity-40 cursor-not-allowed text-white/55">
+        <span className="text-base">{item.emoji}</span>
+        {item.label}
+        <Lock className="w-3.5 h-3.5 ml-auto" />
+      </div>
+    );
+  }
 
   return (
     <Link
@@ -65,7 +77,11 @@ function ThemeToggle({ className = "" }) {
 export default function Layout() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
-  const navItems = user?.user_type === "teacher" ? teacherItems : studentItems;
+  const isTeacher = user?.user_type === "teacher";
+  // ครู: เห็นเฉพาะเมนูครู | นักเรียน: เห็นเมนูนักเรียน + ปุ่ม Teacher Dashboard ล็อกไว้
+  const navItems = isTeacher
+    ? teacherItems
+    : [...studentItems, { path: "/teacher-dashboard", label: "Teacher Dashboard", emoji: "📊", teacherOnly: true }];
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,7 +105,9 @@ export default function Layout() {
         </div>
 
         <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => <NavLink key={item.path} item={item} />)}
+          {navItems.map((item) => (
+            <NavLink key={item.path} item={item} disabled={item.teacherOnly && !isTeacher} />
+          ))}
         </nav>
 
         <div className="px-4 py-3 border-t border-white/10 space-y-2">
@@ -137,7 +155,11 @@ export default function Layout() {
               </div>
               <nav className="p-3 space-y-0.5">
                 {navItems.map((item) =>
-                <NavLink key={item.path} item={item} onClick={() => setOpen(false)} />
+                <NavLink
+                  key={item.path}
+                  item={item}
+                  onClick={() => setOpen(false)}
+                  disabled={item.teacherOnly && !isTeacher} />
                 )}
               </nav>
               <div className="px-4 py-4 border-t border-white/10 space-y-2">
