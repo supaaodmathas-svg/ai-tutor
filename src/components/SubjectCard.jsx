@@ -3,16 +3,17 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 // วิชาที่เป็นเนื้อหาสอบ A-Level (MyTCAS / ทปอ.)
+// วิชาที่เป็นเนื้อหาสอบ A-Level ทั้งวิชา (มีเฉพาะเนื้อหา ม.4-ม.6)
 const aLevelSubjects = [
   "คณิตศาสตร์ 1",
   "คณิตศาสตร์ 2",
   "ฟิสิกส์",
   "เคมี",
   "ชีววิทยา",
-  "ภาษาอังกฤษ",
-  "ภาษาไทย",
-  "สังคมศึกษา",
 ];
+// วิชาที่ A-Level เฉพาะระดับชั้น ม.4-ม.6 (ไฮไลต์ที่ตัวเลือกระดับชั้น ไม่ใช่การ์ดวิชา)
+export const aLevelGradeSubjects = ["ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
+export const aLevelGrades = ["ม.4", "ม.5", "ม.6"];
 
 const subjectConfig = {
   "คณิตศาสตร์": { emoji: "🔢", gradient: "from-blue-400 to-cyan-500", bg: "bg-cyan-50" },

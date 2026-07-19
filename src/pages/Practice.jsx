@@ -15,6 +15,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { subjectTopics } from "@/lib/subjectTopics";
 import { AI_TUTOR_RULES } from "@/lib/aiTutorRules";
 
+import { aLevelGradeSubjects, aLevelGrades } from "@/components/SubjectCard";
 const subjects = ["คณิตศาสตร์", "วิทยาศาสตร์", "คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
 
@@ -275,9 +276,19 @@ export default function Practice() {
                   <SelectValue placeholder="เลือกระดับชั้น" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(availableGrades.length > 0 ? availableGrades : gradeOptions).map(g => (
-                    <SelectItem key={g} value={g}>{g}</SelectItem>
-                  ))}
+                  {(availableGrades.length > 0 ? availableGrades : gradeOptions).map(g => {
+                    const isALevelGrade = aLevelGradeSubjects.includes(selectedSubject) && aLevelGrades.includes(g);
+                    return (
+                      <SelectItem key={g} value={g}>
+                        <span className="flex items-center gap-2">
+                          {g}
+                          {isALevelGrade && (
+                            <Badge className="text-[9px] py-0 px-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">A-Level</Badge>
+                          )}
+                        </span>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
