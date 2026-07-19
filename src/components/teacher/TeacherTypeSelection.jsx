@@ -13,7 +13,12 @@ export default function TeacherTypeSelection() {
     if (loading) return;
     setLoading(type);
     try {
-      await base44.auth.updateMe({ teacher_institution_type: type });
+      // เริ่มใหม่เมื่อเปลี่ยนประเภทสถาบัน
+      await base44.auth.updateMe({
+        teacher_institution_type: type,
+        teacher_institution_id: null,
+        teaching_subject: null,
+      });
       await checkUserAuth();
     } catch (e) {
       alert(e.message || "เกิดข้อผิดพลาด");

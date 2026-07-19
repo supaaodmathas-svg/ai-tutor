@@ -189,8 +189,8 @@ export default function TeacherDashboard() {
     return <SchoolDashboard user={user} onResetSubject={resetSubject} onResetType={resetTeacherType} />;
   }
 
-  // No linked institution yet → access code gate
-  if (!linkedInstId) {
+  // access code gate: สถาบันศึกษา (ยังไม่ได้กรอก 123) หรือ กวดวิชา (ยังไม่ได้เชื่อมสถาบัน)
+  if (teacherType === "school" || !linkedInstId) {
     return (
       <div className="space-y-6 max-w-md mx-auto pt-8">
         <div className="text-center">
