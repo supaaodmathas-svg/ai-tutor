@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Building2, Users, BookOpen, TrendingUp, Award, Search, KeyRound, Layers } from "lucide-react";
 import { motion } from "framer-motion";
+import StudentStatDialog from "@/components/teacher/StudentStatDialog";
 
 export default function TeacherDashboard() {
   const { user, checkUserAuth } = useAuth();
@@ -18,6 +19,9 @@ export default function TeacherDashboard() {
   const [quizCounts, setQuizCounts] = useState({});
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
+  const [quizData, setQuizData] = useState({});
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   // access code gate
   const [verifying, setVerifying] = useState(false);
@@ -47,21 +51,26 @@ export default function TeacherDashboard() {
     setMembers(mems);
     const cs = await base44.entities.Course.filter({ institution_id: instId });
     setCourses(cs);
+    const data = {};
     const counts = {};
     await Promise.all(
       mems.map(async (m) => {
         if (m.user_id) {
           try {
             const quizzes = await base44.entities.Quiz.filter({ created_by_id: m.user_id, completed: true });
+            data[m.user_id] = quizzes;
             counts[m.user_id] = quizzes.length;
           } catch {
+            data[m.user_id] = [];
             counts[m.user_id] = 0;
           }
         } else {
+          data[m.id] = [];
           counts[m.id] = 0;
         }
       })
     );
+    setQuizData(data);
     setQuizCounts(counts);
   };
 
@@ -103,6 +112,12 @@ export default function TeacherDashboard() {
       m.student_name?.toLowerCase().includes(search.toLowerCase()) ||
       m.student_code?.toLowerCase().includes(search.toLowerCase())
   );
+  const sortedMembers = [...filteredMembers].sort((a, b) => {
+    if (sortBy === "name") return (a.student_name || "").localeCompare(b.student_name || "", "th");
+    const ca = quizCounts[a.user_id || a.id] || 0;
+    const cb = quizCounts[b.user_id || b.id] || 0;
+    return sortBy === "quizzes_desc" ? cb - ca : ca - cb;
+  });
 
   const totalStudents = depMembers.length;
   const totalQuizzes = depMembers.reduce((sum, m) => sum + (quizCounts[m.user_id || m.id] || 0), 0);
@@ -223,14 +238,26 @@ export default function TeacherDashboard() {
             <Users className="w-4 h-4" />
             <h2 className="font-display font-semibold">รายชื่อนักเรียน ({filteredMembers.length})</h2>
           </div>
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="ค้นหาชื่อ/รหัสนักเรียน"
-              className="pl-9"
-            />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-56">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="ค้นหาชื่อ/รหัสนักเรียน"
+                className="pl-9"
+              />
+            </div>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">ชื่อ (ก-ฮ)</SelectItem>
+                <SelectItem value="quizzes_desc">ข้อสอบ มาก→น้อย</SelectItem>
+                <SelectItem value="quizzes_asc">ข้อสอบ น้อย→มาก</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -238,13 +265,14 @@ export default function TeacherDashboard() {
           <p className="text-center text-muted-foreground py-6">ยังไม่มีนักเรียนในภาควิชานี้</p>
         ) : (
           <div className="space-y-2">
-            {filteredMembers.map((m, i) => (
+            {sortedMembers.map((m, i) => (
               <motion.div
                 key={m.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors"
+                onClick={() => setSelectedStudent(m)}
+                className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
@@ -295,6 +323,13 @@ export default function TeacherDashboard() {
           </div>
         )}
       </Card>
+
+      <StudentStatDialog
+        student={selectedStudent}
+        quizzes={selectedStudent ? (quizData[selectedStudent.user_id] || []) : []}
+        open={!!selectedStudent}
+        onOpenChange={(v) => !v && setSelectedStudent(null)}
+      />
     </div>
   );
 }
