@@ -36,7 +36,7 @@ const tokenPackages = [
   },
   {
     tokens: 750,
-    price: 150,
+    price: 149,
     label: "Best Value",
     perToken: "0.20",
     popular: false,
