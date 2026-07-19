@@ -13,6 +13,7 @@ import { Loader2, CheckCircle, FlaskConical, Zap, RotateCcw } from "lucide-react
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import { subjectTopics } from "@/lib/subjectTopics";
+import { AI_TUTOR_RULES } from "@/lib/aiTutorRules";
 
 const subjects = ["คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
@@ -106,7 +107,8 @@ export default function Practice() {
 
     const res = await base44.integrations.Core.InvokeLLM({
       model: quizModel,
-      prompt: `สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} ${topicText}
+      prompt: `${AI_TUTOR_RULES}
+สร้างข้อสอบวิชา ${selectedSubject} ${gradeText} ${topicText}
 จำนวนข้อสอบ: ${count} ข้อ (ต้องเท่ากับ ${count} พอดี ห้ามมากกว่าหรือน้อยกว่า)
 ระดับความยาก: ${level}/5
 

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import QuizQuestion from "@/components/QuizQuestion";
 import { Loader2, CheckCircle, ArrowRight, BookOpen, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
+import { AI_TUTOR_RULES } from "@/lib/aiTutorRules";
 
 export default function PlacementTest() {
   const navigate = useNavigate();
@@ -42,7 +43,8 @@ export default function PlacementTest() {
       // Fallback: generate on-the-fly if no bank exists
       const res = await base44.integrations.Core.InvokeLLM({
         model: 'gemini_3_flash',
-        prompt: `สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมศึกษาประเทศไทย (ม.1-6) จำนวน 10 ข้อ โดยแบ่งเป็น:
+        prompt: `${AI_TUTOR_RULES}
+สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมศึกษาประเทศไทย (ม.1-6) จำนวน 10 ข้อ โดยแบ่งเป็น:
 - Level 1 (ง่ายมาก): 2 ข้อ
 - Level 2 (ง่าย): 2 ข้อ
 - Level 3 (ปานกลาง): 2 ข้อ
@@ -99,7 +101,8 @@ export default function PlacementTest() {
     });
 
     const analysisRes = await base44.integrations.Core.InvokeLLM({
-      prompt: `วิเคราะห์ผลสอบวิชา ${subject} ของนักเรียน:
+      prompt: `${AI_TUTOR_RULES}
+วิเคราะห์ผลสอบวิชา ${subject} ของนักเรียน:
 คะแนนรวม: ${score}/10
 ผลแต่ละระดับ: ${JSON.stringify(correctByLevel)}
 กรุณาวิเคราะห์:

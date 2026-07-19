@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Upload, FileText, Image, CheckCircle, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
+import { AI_TUTOR_RULES } from "@/lib/aiTutorRules";
 
 const EXAM_TYPES = [
   { value: "mc4", label: "ปรนัย 4 ตัวเลือก" },
@@ -216,7 +217,8 @@ export default function ExamGenerator() {
     const isImage = type.startsWith("image/");
     const res = await base44.integrations.Core.InvokeLLM({
       model: "gemini_3_flash",
-      prompt: `วิเคราะห์เนื้อหาในไฟล์นี้ (ชื่อไฟล์: ${name})
+      prompt: `${AI_TUTOR_RULES}
+วิเคราะห์เนื้อหาในไฟล์นี้ (ชื่อไฟล์: ${name})
 จงระบุ:
 1. วิชาหรือหัวข้อหลักของเนื้อหา
 2. หัวข้อย่อยสำคัญที่พบ (3-8 หัวข้อ)
@@ -267,7 +269,8 @@ export default function ExamGenerator() {
 
     const res = await base44.integrations.Core.InvokeLLM({
       model: "gemini_3_flash",
-      prompt: `สร้างข้อสอบจากเนื้อหาในไฟล์นี้ (อ้างอิงจากเนื้อหาเท่านั้น ห้ามสร้างจากความรู้ภายนอก)
+      prompt: `${AI_TUTOR_RULES}
+สร้างข้อสอบจากเนื้อหาในไฟล์นี้ (อ้างอิงจากเนื้อหาเท่านั้น ห้ามสร้างจากความรู้ภายนอก)
 วิชา: ${analysis?.subject}
 หัวข้อสำคัญ: ${analysis?.topics?.join(", ")}
 จำนวนข้อ: ${count} ข้อ (ต้องเท่ากับ ${count} พอดี)
