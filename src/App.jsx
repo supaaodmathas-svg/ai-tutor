@@ -26,6 +26,7 @@ import LearningTwin from '@/pages/LearningTwin';
 import ExamGenerator from '@/pages/ExamGenerator';
 import AIColab from '@/pages/AIColab';
 import TeacherDashboard from '@/pages/TeacherDashboard';
+import ClassroomQuiz from '@/pages/ClassroomQuiz';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
           <Route path="/exam-generator" element={<ExamGenerator />} />
           <Route path="/ai-colab" element={<AIColab />} />
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+          <Route path="/classroom" element={<ClassroomQuiz />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

@@ -9,6 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Building2, Users, BookOpen, TrendingUp, Award, Search, KeyRound, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import StudentStatDialog from "@/components/teacher/StudentStatDialog";
+import CreateClassroomQuizDialog from "@/components/teacher/CreateClassroomQuizDialog";
+import ClassroomQuizHost from "@/components/teacher/ClassroomQuizHost";
+import { Gamepad2 } from "lucide-react";
 
 export default function TeacherDashboard() {
   const { user, checkUserAuth } = useAuth();
@@ -22,6 +25,8 @@ export default function TeacherDashboard() {
   const [sortBy, setSortBy] = useState("name");
   const [quizData, setQuizData] = useState({});
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [activeRoom, setActiveRoom] = useState(null);
 
   // access code gate
   const [verifying, setVerifying] = useState(false);
@@ -72,6 +77,15 @@ export default function TeacherDashboard() {
     );
     setQuizData(data);
     setQuizCounts(counts);
+
+    // load teacher's open classroom quiz rooms
+    try {
+      const myRooms = await base44.entities.ClassroomQuiz.filter({ teacher_id: user.id });
+      const openRoom = myRooms
+        .filter((r) => r.status !== "completed")
+        .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
+      setActiveRoom(openRoom || null);
+    } catch { setActiveRoom(null); }
   };
 
   const handleVerifyCode = async (e) => {
@@ -230,6 +244,34 @@ export default function TeacherDashboard() {
           </motion.div>
         ))}
       </div>
+
+      {/* ห้องเรียนสด (Kahoot) */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-primary">
+          <Gamepad2 className="w-5 h-5" />
+          <h2 className="font-display font-semibold">ห้องเรียนสด (Kahoot)</h2>
+        </div>
+        {activeRoom ? (
+          <ClassroomQuizHost room={activeRoom} onClose={() => setActiveRoom(null)} />
+        ) : (
+          <Card className="p-6 border-0 shadow text-center space-y-3">
+            <Gamepad2 className="w-10 h-10 text-primary mx-auto" />
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              สร้างห้องเรียนสดให้นักเรียนเล่นข้อสอบชุดเดียวกันแบบแข่งขันสไตล์ Kahoot — ฟรี! นักเรียนไม่เสีย Token
+            </p>
+            <Button onClick={() => setShowCreate(true)} className="bg-gradient-to-r from-primary to-accent">
+              <Gamepad2 className="w-4 h-4 mr-2" /> สร้างห้องใหม่
+            </Button>
+          </Card>
+        )}
+      </div>
+
+      <CreateClassroomQuizDialog
+        open={showCreate}
+        onOpenChange={setShowCreate}
+        teacher={user}
+        onCreated={(room) => setActiveRoom(room)}
+      />
 
       {/* รายชื่อนักเรียน */}
       <Card className="p-5 border-0 shadow-lg space-y-4">
