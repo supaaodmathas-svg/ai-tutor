@@ -3,10 +3,31 @@ import { Link } from "react-router-dom";
 
 export default function AuthLayout({ icon: Icon, title, subtitle, footer, children, videoBg }) {
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background relative">
+      {/* Mobile-only full-screen background video */}
+      {videoBg && (
+        <div className="lg:hidden absolute inset-0 z-0 overflow-hidden">
+          <video
+            src={videoBg}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            poster="https://media.base44.com/images/public/6a301ff5fe467608523f8e74/3b86a8beb_ChatGPT_Image_Jun_26_2026_06_33_05_PM.png"
+            className="absolute inset-0 w-full h-full object-cover"
+            onLoadedData={(e) => { e.target.play().catch(() => {}); }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(135deg, rgba(55,48,163,0.78) 0%, rgba(79,70,229,0.72) 40%, rgba(124,58,237,0.78) 100%)" }}
+          />
+        </div>
+      )}
+
       {/* Left decorative panel — hidden on mobile */}
       <div
-        className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 relative overflow-hidden"
+        className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 relative overflow-hidden z-10"
         style={{ background: "linear-gradient(135deg, #3730a3 0%, #4F46E5 40%, #7c3aed 100%)" }}
       >
         {/* Background video */}
@@ -69,7 +90,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
       </div>
 
       {/* Right form panel */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex lg:hidden flex-col items-center mb-8">
@@ -80,24 +101,24 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="font-display font-black text-2xl text-foreground">
-              DINO<span className="text-primary">Tutor</span>
+            <span className="font-display font-black text-2xl text-white drop-shadow">
+              DINO<span className="text-yellow-300">Tutor</span>
             </span>
           </div>
 
           {/* Title */}
           <div className="mb-8">
-            <h2 className="text-2xl font-display font-bold text-foreground">{title}</h2>
-            {subtitle && <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>}
+            <h2 className="text-2xl font-display font-bold lg:text-foreground text-white drop-shadow-sm">{title}</h2>
+            {subtitle && <p className="lg:text-muted-foreground text-white/80 mt-1 text-sm">{subtitle}</p>}
           </div>
 
           {/* Card */}
-          <div className="bg-card rounded-2xl shadow-sm border border-border p-8">
+          <div className="bg-card rounded-2xl shadow-xl border border-border p-8">
             {children}
           </div>
 
           {footer && (
-            <p className="text-center text-sm text-muted-foreground mt-6">{footer}</p>
+            <p className="text-center text-sm lg:text-muted-foreground text-white/80 mt-6">{footer}</p>
           )}
         </div>
       </div>
