@@ -2,27 +2,9 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// วิชาที่เป็นเนื้อหาสอบ A-Level (MyTCAS / ทปอ.)
-// วิชาที่เป็นเนื้อหาสอบ A-Level ทั้งวิชา (มีเฉพาะเนื้อหา ม.4-ม.6)
-const aLevelSubjects = [
-  "คณิตศาสตร์ 1",
-  "คณิตศาสตร์ 2",
-  "ฟิสิกส์",
-  "เคมี",
-  "ชีววิทยา",
-];
-// วิชาที่ A-Level เฉพาะระดับชั้น ม.4-ม.6 (ไฮไลต์ที่ตัวเลือกระดับชั้น ไม่ใช่การ์ดวิชา)
-export const aLevelGradeSubjects = ["ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
-export const aLevelGrades = ["ม.4", "ม.5", "ม.6"];
-
 const subjectConfig = {
   "คณิตศาสตร์": { emoji: "🔢", gradient: "from-blue-400 to-cyan-500", bg: "bg-cyan-50" },
   "วิทยาศาสตร์": { emoji: "🔬", gradient: "from-green-400 to-teal-500", bg: "bg-green-50" },
-  "คณิตศาสตร์ 1": { emoji: "📐", gradient: "from-blue-500 to-indigo-600", bg: "bg-blue-50" },
-  "คณิตศาสตร์ 2": { emoji: "📊", gradient: "from-indigo-500 to-purple-600", bg: "bg-indigo-50" },
-  "ฟิสิกส์": { emoji: "⚛️", gradient: "from-orange-500 to-red-500", bg: "bg-orange-50" },
-  "เคมี": { emoji: "🧪", gradient: "from-green-500 to-emerald-600", bg: "bg-green-50" },
-  "ชีววิทยา": { emoji: "🧬", gradient: "from-teal-500 to-cyan-600", bg: "bg-teal-50" },
   "ภาษาอังกฤษ": { emoji: "🌍", gradient: "from-violet-500 to-purple-600", bg: "bg-violet-50" },
   "ภาษาไทย": { emoji: "📝", gradient: "from-rose-500 to-pink-600", bg: "bg-rose-50" },
   "สังคมศึกษา": { emoji: "🏛️", gradient: "from-amber-500 to-yellow-600", bg: "bg-amber-50" },
@@ -30,12 +12,11 @@ const subjectConfig = {
 
 export default function SubjectCard({ subject, level, onClick, showLevel = false }) {
   const config = subjectConfig[subject] || { emoji: "📚", gradient: "from-gray-500 to-gray-600", bg: "bg-gray-50" };
-  const isALevel = aLevelSubjects.includes(subject);
 
   return (
     <Card
       onClick={onClick}
-      className={`group cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${isALevel ? "border-2 border-amber-400/60" : "border-0"}`}
+      className="group cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0"
     >
       <div className={`h-2 bg-gradient-to-r ${config.gradient}`} />
       <div className="p-5">
@@ -43,11 +24,7 @@ export default function SubjectCard({ subject, level, onClick, showLevel = false
           <div className={`w-12 h-12 rounded-xl ${config.bg} flex items-center justify-center text-2xl group-hover:scale-110 transition-transform`}>
             {config.emoji}
           </div>
-          {isALevel ? (
-            <Badge className="text-[10px] bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 gap-1">
-              <span>A-Level</span>
-            </Badge>
-          ) : showLevel && level ? (
+          {showLevel && level ? (
             <Badge variant="secondary" className="text-xs">
               Lv.{level}
             </Badge>

@@ -12,7 +12,7 @@ import SavedQuizzes from "@/components/SavedQuizzes";
 import { useLanguage } from "@/lib/LanguageContext";
 import { tr } from "@/lib/translations";
 
-const subjectKeys = ["คณิตศาสตร์", "วิทยาศาสตร์", "คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
+const subjectKeys = ["คณิตศาสตร์", "วิทยาศาสตร์", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
 const quickLinkDefs = [
   { to: "/subjects", icon: ScanText, tint: "text-indigo-600 bg-indigo-50" },

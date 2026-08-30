@@ -12,7 +12,7 @@ import { AI_TUTOR_RULES } from "@/lib/aiTutorRules";
 export default function PlacementTest() {
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
-  const subject = urlParams.get("subject") || "คณิตศาสตร์ 1";
+  const subject = urlParams.get("subject") || "คณิตศาสตร์";
 
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
@@ -44,7 +44,7 @@ export default function PlacementTest() {
       const res = await base44.integrations.Core.InvokeLLM({
         model: 'gemini_3_flash',
         prompt: `${AI_TUTOR_RULES}
-สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมศึกษาประเทศไทย (ม.1-6) จำนวน 10 ข้อ โดยแบ่งเป็น:
+สร้างข้อสอบวิชา ${subject} สำหรับระดับมัธยมศึกษาตอนต้นประเทศไทย (ม.1-3) จำนวน 10 ข้อ โดยแบ่งเป็น:
 - Level 1 (ง่ายมาก): 2 ข้อ
 - Level 2 (ง่าย): 2 ข้อ
 - Level 3 (ปานกลาง): 2 ข้อ

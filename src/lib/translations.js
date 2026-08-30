@@ -102,11 +102,6 @@ export const tr = {
       subjectDisplay: {
         "คณิตศาสตร์": "Mathematics",
         "วิทยาศาสตร์": "Science",
-        "คณิตศาสตร์ 1": "Math 1",
-        "คณิตศาสตร์ 2": "Math 2",
-        "ฟิสิกส์": "Physics",
-        "เคมี": "Chemistry",
-        "ชีววิทยา": "Biology",
         "ภาษาอังกฤษ": "English",
         "ภาษาไทย": "Thai",
         "สังคมศึกษา": "Social Studies",

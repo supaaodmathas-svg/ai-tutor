@@ -15,9 +15,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { subjectTopics } from "@/lib/subjectTopics";
 import { AI_TUTOR_RULES } from "@/lib/aiTutorRules";
 
-import { aLevelGradeSubjects, aLevelGrades } from "@/components/SubjectCard";
-const subjects = ["คณิตศาสตร์", "วิทยาศาสตร์", "คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
-const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
+const subjects = ["คณิตศาสตร์", "วิทยาศาสตร์", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
+const gradeOptions = ["ม.1", "ม.2", "ม.3"];
 
 export default function Practice() {
   const { user } = useAuth();
@@ -90,7 +89,7 @@ export default function Practice() {
     await base44.auth.updateMe({ tokens: currentTokens - tokenCost });
     queryClient.invalidateQueries({ queryKey: ["current-user-practice"] });
 
-    const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-6";
+    const gradeText = selectedGrade ? `ระดับชั้น ${selectedGrade}` : "มัธยมศึกษาปีที่ 1-3";
     const topicText = selectedTopics.length > 0 ? `เนื้อหา: ${selectedTopics.join(", ")}` : "";
 
     const isMath = /คณิตศาสตร์|math|algebra|geometry|calculus|สถิติ|ความน่าจะเป็น/i.test(selectedSubject);
@@ -276,19 +275,9 @@ export default function Practice() {
                   <SelectValue placeholder="เลือกระดับชั้น" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(availableGrades.length > 0 ? availableGrades : gradeOptions).map(g => {
-                    const isALevelGrade = aLevelGradeSubjects.includes(selectedSubject) && aLevelGrades.includes(g);
-                    return (
-                      <SelectItem key={g} value={g}>
-                        <span className="flex items-center gap-2">
-                          {g}
-                          {isALevelGrade && (
-                            <Badge className="text-[9px] py-0 px-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">A-Level</Badge>
-                          )}
-                        </span>
-                      </SelectItem>
-                    );
-                  })}
+                  {(availableGrades.length > 0 ? availableGrades : gradeOptions).map(g => (
+                    <SelectItem key={g} value={g}>{g}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

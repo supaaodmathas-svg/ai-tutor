@@ -5,9 +5,6 @@ export const TEACHING_SUBJECTS = [
   "ภาษาอังกฤษ",
   "ภาษาไทย",
   "สังคมศึกษา",
-  "ฟิสิกส์",
-  "เคมี",
-  "ชีววิทยา",
 ];
 
 export const TEACHING_ROOMS = ["ห้อง 1", "ห้อง 2", "ห้อง 3", "ห้อง 4", "ห้อง 5"];
@@ -57,27 +54,6 @@ export const SUBJECT_SCHEDULE = {
     { day: "พุธ", period: "คาบ 5", room: "ห้อง 2" },
     { day: "พฤหัสบดี", period: "คาบ 1", room: "ห้อง 3" },
     { day: "ศุกร์", period: "คาบ 2", room: "ห้อง 1" },
-  ],
-  "ฟิสิกส์": [
-    { day: "จันทร์", period: "คาบ 1", room: "ห้อง 2" },
-    { day: "อังคาร", period: "คาบ 4", room: "ห้อง 5" },
-    { day: "พุธ", period: "คาบ 3", room: "ห้อง 1" },
-    { day: "พฤหัสบดี", period: "คาบ 2", room: "ห้อง 4" },
-    { day: "ศุกร์", period: "คาบ 3", room: "ห้อง 3" },
-  ],
-  "เคมี": [
-    { day: "จันทร์", period: "คาบ 3", room: "ห้อง 1" },
-    { day: "อังคาร", period: "คาบ 5", room: "ห้อง 3" },
-    { day: "พุธ", period: "คาบ 4", room: "ห้อง 5" },
-    { day: "พฤหัสบดี", period: "คาบ 4", room: "ห้อง 2" },
-    { day: "ศุกร์", period: "คาบ 5", room: "ห้อง 1" },
-  ],
-  "ชีววิทยา": [
-    { day: "จันทร์", period: "คาบ 4", room: "ห้อง 5" },
-    { day: "อังคาร", period: "คาบ 3", room: "ห้อง 1" },
-    { day: "พุธ", period: "คาบ 1", room: "ห้อง 2" },
-    { day: "พฤหัสบดี", period: "คาบ 5", room: "ห้อง 3" },
-    { day: "ศุกร์", period: "คาบ 1", room: "ห้อง 5" },
   ],
 };
 

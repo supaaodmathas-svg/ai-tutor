@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Zap } from "lucide-react";
 import { AI_TUTOR_RULES } from "@/lib/aiTutorRules";
 
-const subjects = ["คณิตศาสตร์", "วิทยาศาสตร์", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา", "ฟิสิกส์", "เคมี", "ชีววิทยา"];
-const gradeOptions = ["ม.1", "ม.2", "ม.3", "ม.4", "ม.5", "ม.6"];
+const subjects = ["คณิตศาสตร์", "วิทยาศาสตร์", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
+const gradeOptions = ["ม.1", "ม.2", "ม.3"];
 
 const genCode = () => Math.random().toString(36).slice(2, 8).toUpperCase();
 
