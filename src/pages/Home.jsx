@@ -90,12 +90,12 @@ export default function Home() {
           <div className="relative">
             <div className="flex items-center gap-2 mb-1">
               <Compass className="w-5 h-5 text-white" />
-              <span className="text-xs font-bold text-white/80 px-2 py-0.5 rounded-full bg-white/15">แนะนำใหม่</span>
+              <span className="text-xs font-bold text-white/80 px-2 py-0.5 rounded-full bg-white/15">{t.newBadge}</span>
             </div>
-            <h2 className="text-lg font-display font-bold text-white mb-1">วิเคราะห์สายการเรียน & อาชีพอนาคต</h2>
-            <p className="text-sm text-white/85 mb-3">ตอบแบบสอบถาม 2 นาที ให้ AI วิเคราะห์ว่าคุณเหมาะกับสายไหน คณะไหน พร้อมข้อมูลตลาดแรงงานล่าสุด</p>
+            <h2 className="text-lg font-display font-bold text-white mb-1">{t.careerTitle}</h2>
+            <p className="text-sm text-white/85 mb-3">{t.careerDesc}</p>
             <span className="inline-flex items-center gap-1.5 text-sm font-bold text-white">
-              เริ่มวิเคราะห์ <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              {t.startAnalysis} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
         </Link>
@@ -131,7 +131,7 @@ export default function Home() {
           <Sparkles className="absolute top-4 right-5 w-6 h-6 text-primary/40" />
         )}
 
-        <p className="text-sm font-semibold text-muted-foreground mb-1">สวัสดี</p>
+        <p className="text-sm font-semibold text-muted-foreground mb-1">{t.greeting}</p>
         <h1
           className="text-2xl font-display font-bold mb-1"
           style={user?.is_premium ? {
@@ -140,10 +140,10 @@ export default function Home() {
             WebkitTextFillColor: "transparent"
           } : {}}
         >
-          {!user?.is_premium && <span className="text-foreground">{user?.full_name || "นักเรียน"}!</span>}
-          {user?.is_premium && `${user?.full_name || "นักเรียน"}!`}
+          {!user?.is_premium && <span className="text-foreground">{user?.full_name || t.student}!</span>}
+          {user?.is_premium && `${user?.full_name || t.student}!`}
         </h1>
-        <p className="text-sm text-muted-foreground">วันนี้จะเรียนรู้อะไรดี?</p>
+        <p className="text-sm text-muted-foreground">{t.whatToday}</p>
       </div>
 
       <style>{`
@@ -160,21 +160,21 @@ export default function Home() {
             <Zap className="w-4 h-4 text-primary" fill="currentColor" />
             <p className="text-2xl font-display font-bold text-primary">{user?.tokens ?? 50}</p>
           </div>
-          <p className="text-xs font-semibold text-muted-foreground mt-1">Tokens</p>
+          <p className="text-xs font-semibold text-muted-foreground mt-1">{t.tokens}</p>
         </div>
         <div className="bg-card rounded-2xl p-4 text-center border border-border shadow-sm">
           <div className="flex items-center justify-center gap-1.5">
             <FileText className="w-4 h-4 text-accent" />
             <p className="text-2xl font-display font-bold text-accent">{quizzes.length}</p>
           </div>
-          <p className="text-xs font-semibold text-muted-foreground mt-1">ข้อสอบที่ทำ</p>
+          <p className="text-xs font-semibold text-muted-foreground mt-1">{t.quizzesDone}</p>
         </div>
         <div className="bg-card rounded-2xl p-4 text-center border border-border shadow-sm">
           <div className="flex items-center justify-center gap-1.5">
             <Star className="w-4 h-4 text-amber-500" fill="currentColor" />
             <p className="text-2xl font-display font-bold text-amber-500">{avgScore !== null ? `${avgScore}%` : "—"}</p>
           </div>
-          <p className="text-xs font-semibold text-muted-foreground mt-1">คะแนนเฉลี่ย</p>
+          <p className="text-xs font-semibold text-muted-foreground mt-1">{t.avgScore}</p>
         </div>
       </div>
 
@@ -182,10 +182,12 @@ export default function Home() {
       <div>
         <div className="flex items-center gap-2 mb-3">
           <Gamepad2 className="w-4 h-4 text-muted-foreground" />
-          <p className="text-sm font-bold text-muted-foreground">เมนูหลัก</p>
+          <p className="text-sm font-bold text-muted-foreground">{t.mainMenu}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {quickLinks.map(({ to, label, sub, icon: Icon, tint }) => (
+          {quickLinkDefs.map(({ to, icon: Icon, tint }) => {
+            const { label, sub } = t.quickLinks[to];
+            return (
             <Link
               key={to}
               to={to}
@@ -202,7 +204,8 @@ export default function Home() {
                 <ArrowRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -211,19 +214,19 @@ export default function Home() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Trophy className="w-4 h-4 text-muted-foreground" />
-            <p className="text-sm font-bold text-muted-foreground">เลเวลรายวิชา</p>
+            <p className="text-sm font-bold text-muted-foreground">{t.subjectLevels}</p>
           </div>
           <div className="bg-card rounded-2xl border border-border shadow-sm divide-y divide-border">
-            {subjects.map(s => {
+            {subjectKeys.map(s => {
               const lv = subjectLevels[s];
               const subjectAvg = getSubjectAvgScore(s);
               if (!lv) return null;
               return (
                 <div key={s} className="flex items-center justify-between px-5 py-3">
                   <div>
-                    <span className="text-sm font-semibold text-foreground">{s}</span>
+                    <span className="text-sm font-semibold text-foreground">{t.subjectDisplay[s] || s}</span>
                     {subjectAvg !== null && (
-                      <p className="text-xs text-muted-foreground">คะแนนเฉลี่ย: {subjectAvg}%</p>
+                      <p className="text-xs text-muted-foreground">{t.avgScoreLabel}: {subjectAvg}%</p>
                     )}
                   </div>
                   <span className="inline-flex items-center gap-1 text-sm font-bold text-primary bg-secondary px-3 py-1 rounded-full">
@@ -248,11 +251,11 @@ export default function Home() {
             <p className="font-display font-bold text-xl" style={{background: "linear-gradient(90deg, #818cf8, #e879f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"}}>AI Pro</p>
             <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{background: "#134e4a", color: "#2dd4bf", border: "1px solid #0d9488"}}>BEST VALUE</span>
           </div>
-          <p className="text-center text-sm mb-3" style={{color: "#94a3b8"}}>คำอธิบายละเอียด · แผนเรียนส่วนตัว</p>
-          <p className="text-center font-display font-bold text-3xl text-white mb-4">฿109 <span className="text-base font-normal" style={{color: "#94a3b8"}}>/เดือน</span></p>
+          <p className="text-center text-sm mb-3" style={{color: "#94a3b8"}}>{t.proDesc}</p>
+          <p className="text-center font-display font-bold text-3xl text-white mb-4">฿109 <span className="text-base font-normal" style={{color: "#94a3b8"}}>{t.perMonth}</span></p>
           <Link to="/tokens">
             <button className="w-full py-3 rounded-xl font-bold text-sm transition-all inline-flex items-center justify-center gap-2" style={{background: "rgba(168,85,247,0.15)", border: "1.5px solid #a855f7", color: "#c084fc", boxShadow: "0 0 12px rgba(168,85,247,0.3)"}}>
-              อัปเกรดเลย
+              {t.upgradeNow}
               <ArrowRight className="w-4 h-4" />
             </button>
           </Link>
