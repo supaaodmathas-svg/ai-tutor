@@ -1,0 +1,108 @@
+{
+  "name": "CareerAssessment",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID \u0e1c\u0e39\u0e49\u0e43\u0e0a\u0e49\u0e17\u0e35\u0e48\u0e17\u0e33\u0e41\u0e1a\u0e1a\u0e1b\u0e23\u0e30\u0e40\u0e21\u0e34\u0e19"
+    },
+    "preferred_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0e2a\u0e32\u0e22\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e19\u0e43\u0e08/\u0e0a\u0e2d\u0e1a"
+    },
+    "dream_career": {
+      "type": "string",
+      "description": "\u0e04\u0e27\u0e32\u0e21\u0e1d\u0e31\u0e19/\u0e2d\u0e32\u0e0a\u0e35\u0e1e\u0e17\u0e35\u0e48\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e1b\u0e47\u0e19\u0e43\u0e19\u0e2d\u0e19\u0e32\u0e04\u0e15"
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0e2a\u0e34\u0e48\u0e07\u0e17\u0e35\u0e48\u0e16\u0e19\u0e31\u0e14"
+    },
+    "special_abilities": {
+      "type": "string",
+      "description": "\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e1e\u0e34\u0e40\u0e28\u0e29/\u0e07\u0e32\u0e19\u0e2d\u0e14\u0e34\u0e40\u0e23\u0e01/\u0e17\u0e31\u0e01\u0e29\u0e30\u0e40\u0e09\u0e1e\u0e32\u0e30\u0e15\u0e31\u0e27"
+    },
+    "help_others_with": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0e2a\u0e34\u0e48\u0e07\u0e17\u0e35\u0e48\u0e04\u0e19\u0e23\u0e2d\u0e1a\u0e15\u0e31\u0e27\u0e21\u0e31\u0e01\u0e02\u0e2d\u0e43\u0e2b\u0e49\u0e0a\u0e48\u0e27\u0e22"
+    },
+    "favorite_subjects": {
+      "type": "string",
+      "description": "\u0e27\u0e34\u0e0a\u0e32\u0e17\u0e35\u0e48\u0e0a\u0e2d\u0e1a\u0e17\u0e35\u0e48\u0e2a\u0e38\u0e14\u0e43\u0e19\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19"
+    },
+    "work_style": {
+      "type": "string",
+      "description": "\u0e1a\u0e23\u0e23\u0e22\u0e32\u0e01\u0e32\u0e28\u0e01\u0e32\u0e23\u0e17\u0e33\u0e07\u0e32\u0e19\u0e17\u0e35\u0e48\u0e0a\u0e2d\u0e1a"
+    },
+    "market_research": {
+      "type": "string",
+      "description": "\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e15\u0e25\u0e32\u0e14\u0e41\u0e23\u0e07\u0e07\u0e32\u0e19\u0e25\u0e48\u0e32\u0e2a\u0e38\u0e14\u0e08\u0e32\u0e01\u0e01\u0e32\u0e23\u0e04\u0e49\u0e19\u0e40\u0e27\u0e47\u0e1a"
+    },
+    "analysis": {
+      "type": "object",
+      "description": "\u0e1c\u0e25\u0e27\u0e34\u0e40\u0e04\u0e23\u0e32\u0e30\u0e2b\u0e4c\u0e08\u0e32\u0e01 Claude AI",
+      "properties": {
+        "recommended_path": {
+          "type": "string"
+        },
+        "path_reason": {
+          "type": "string"
+        },
+        "recommended_faculties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "faculty": {
+                "type": "string"
+              },
+              "branch": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "match_score": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "labor_market_trend": {
+          "type": "string"
+        },
+        "growth_opportunity": {
+          "type": "string"
+        },
+        "focus_subjects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "future_expectations": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

@@ -27,6 +27,7 @@ import ExamGenerator from '@/pages/ExamGenerator';
 import AIColab from '@/pages/AIColab';
 import TeacherDashboard from '@/pages/TeacherDashboard';
 import ClassroomQuiz from '@/pages/ClassroomQuiz';
+import CareerAssessment from '@/pages/CareerAssessment';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
           <Route path="/ai-colab" element={<AIColab />} />
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/classroom" element={<ClassroomQuiz />} />
+          <Route path="/career-assessment" element={<CareerAssessment />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

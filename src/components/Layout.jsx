@@ -6,13 +6,14 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Home, BookOpen, Trophy, CreditCard, User, LogOut, Menu,
-  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2, Lock, LayoutDashboard } from
+  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2, Lock, LayoutDashboard, Compass } from
 "lucide-react";
 
 const studentItems = [
 { path: "/", label: "หน้าหลัก", icon: Home },
 { path: "/subjects", label: "วัดระดับวิชา", icon: BookOpen },
-{ path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical },
+  { path: "/career-assessment", label: "วิเคราะห์สายเรียน", icon: Compass },
+  { path: "/practice", label: "ฝึกทำข้อสอบ", icon: FlaskConical },
 { path: "/learning-twin", label: "AI Learning Twin", icon: Brain },
 { path: "/exam-generator", label: "Exam Generator", icon: FileText },
 { path: "/ai-colab", label: "AI Colab", icon: Building2 },

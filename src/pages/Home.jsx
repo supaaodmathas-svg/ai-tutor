@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Crown, Sparkles, Zap, FileText, Star, Gamepad2, Swords, Trophy, Brain,
-  ScanText, ArrowRight, Wand2
+  ScanText, ArrowRight, Wand2, Compass
 } from "lucide-react";
 import DailyLoginReward from "@/components/DailyLoginReward";
 import SavedQuizzes from "@/components/SavedQuizzes";
@@ -46,6 +46,12 @@ export default function Home() {
     enabled: !!user?.id,
   });
 
+  const { data: hasAssessment = [] } = useQuery({
+    queryKey: ["has-career-assessment", user?.id],
+    queryFn: () => base44.entities.CareerAssessment.filter({ user_id: user?.id, completed: true }, "-created_date", 1),
+    enabled: !!user?.id,
+  });
+
   if (user?.user_type === "teacher") {
     return <Navigate to="/teacher-dashboard" replace />;
   }
@@ -66,6 +72,30 @@ export default function Home() {
   return (
     <div className="space-y-6 pb-10">
       {showDailyReward && <DailyLoginReward onClose={() => setShowDailyReward(false)} />}
+
+      {/* Career Assessment prompt */}
+      {hasAssessment.length === 0 && (
+        <Link
+          to="/career-assessment"
+          className="block rounded-2xl p-5 relative overflow-hidden group transition-all hover:shadow-lg"
+          style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}
+        >
+          <div className="absolute top-3 right-4 opacity-20">
+            <Compass className="w-16 h-16 text-white" />
+          </div>
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-1">
+              <Compass className="w-5 h-5 text-white" />
+              <span className="text-xs font-bold text-white/80 px-2 py-0.5 rounded-full bg-white/15">แนะนำใหม่</span>
+            </div>
+            <h2 className="text-lg font-display font-bold text-white mb-1">วิเคราะห์สายการเรียน & อาชีพอนาคต</h2>
+            <p className="text-sm text-white/85 mb-3">ตอบแบบสอบถาม 2 นาที ให้ AI วิเคราะห์ว่าคุณเหมาะกับสายไหน คณะไหน พร้อมข้อมูลตลาดแรงงานล่าสุด</p>
+            <span className="inline-flex items-center gap-1.5 text-sm font-bold text-white">
+              เริ่มวิเคราะห์ <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </div>
+        </Link>
+      )}
 
       {/* Hero greeting */}
       <div
