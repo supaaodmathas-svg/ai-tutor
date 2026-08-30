@@ -9,22 +9,26 @@ import {
 } from "lucide-react";
 import DailyLoginReward from "@/components/DailyLoginReward";
 import SavedQuizzes from "@/components/SavedQuizzes";
+import { useLanguage } from "@/lib/LanguageContext";
+import { tr } from "@/lib/translations";
 
-const subjects = ["คณิตศาสตร์", "วิทยาศาสตร์", "คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
+const subjectKeys = ["คณิตศาสตร์", "วิทยาศาสตร์", "คณิตศาสตร์ 1", "คณิตศาสตร์ 2", "ฟิสิกส์", "เคมี", "ชีววิทยา", "ภาษาอังกฤษ", "ภาษาไทย", "สังคมศึกษา"];
 
-const quickLinks = [
-  { to: "/subjects", label: "วัดระดับวิชา", sub: "Placement Test ฟรี", icon: ScanText, tint: "text-indigo-600 bg-indigo-50" },
-  { to: "/practice", label: "ฝึกทำข้อสอบ", sub: "AI สร้างข้อสอบให้", icon: Wand2, tint: "text-violet-600 bg-violet-50" },
-  { to: "/battle", label: "Quiz Battle", sub: "ท้าเพื่อนแข่งแบบเรียลไทม์", icon: Swords, tint: "text-rose-600 bg-rose-50" },
-  { to: "/tournament", label: "Tournament", sub: "แข่งชิงอันดับ", icon: Trophy, tint: "text-amber-600 bg-amber-50" },
-  { to: "/learning-twin", label: "AI Learning Twin", sub: "วิเคราะห์พัฒนาการ", icon: Brain, tint: "text-teal-600 bg-teal-50" },
-  { to: "/exam-generator", label: "Exam Generator", sub: "สร้างข้อสอบจากไฟล์", icon: FileText, tint: "text-sky-600 bg-sky-50" },
+const quickLinkDefs = [
+  { to: "/subjects", icon: ScanText, tint: "text-indigo-600 bg-indigo-50" },
+  { to: "/practice", icon: Wand2, tint: "text-violet-600 bg-violet-50" },
+  { to: "/battle", icon: Swords, tint: "text-rose-600 bg-rose-50" },
+  { to: "/tournament", icon: Trophy, tint: "text-amber-600 bg-amber-50" },
+  { to: "/learning-twin", icon: Brain, tint: "text-teal-600 bg-teal-50" },
+  { to: "/exam-generator", icon: FileText, tint: "text-sky-600 bg-sky-50" },
 ];
 
 
 
 export default function Home() {
   const { user } = useAuth();
+  const { lang } = useLanguage();
+  const t = tr[lang].home;
   const [showDailyReward, setShowDailyReward] = useState(false);
 
   useEffect(() => {

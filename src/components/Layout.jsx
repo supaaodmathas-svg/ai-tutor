@@ -4,9 +4,11 @@ import { useAuth } from "@/lib/AuthContext";
 import { useTheme } from "next-themes";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/LanguageContext";
+import { tr } from "@/lib/translations";
 import {
   Home, BookOpen, Trophy, CreditCard, User, LogOut, Menu,
-  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2, Lock, LayoutDashboard, Compass } from
+  Swords, FlaskConical, Sun, Moon, Brain, FileText, Building2, Gamepad2, Lock, LayoutDashboard, Compass, Languages } from
 "lucide-react";
 
 const studentItems = [
@@ -30,15 +32,17 @@ const teacherItems = [
 
 function NavLink({ item, onClick, disabled }) {
   const location = useLocation();
+  const { lang } = useLanguage();
   const isActive = location.pathname === item.path;
+  const label = tr[lang].sidebar.nav[item.path] || item.label;
 
   if (disabled) {
     return (
       <div
-        title="เฉพาะบัญชีครู"
+        title={tr[lang].sidebar.teacherOnly}
         className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold opacity-40 cursor-not-allowed text-white/55">
         <item.icon className="w-4 h-4 shrink-0" />
-        {item.label}
+        {label}
         <Lock className="w-3.5 h-3.5 ml-auto" />
       </div>
     );
@@ -55,9 +59,21 @@ function NavLink({ item, onClick, disabled }) {
       }>
       
       <item.icon className="w-4 h-4 shrink-0" />
-      {item.label}
+      {label}
     </Link>);
 
+}
+
+function LanguageToggle({ className = "" }) {
+  const { lang, toggle } = useLanguage();
+  return (
+    <button
+      onClick={toggle}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-white/10 hover:bg-white/20 text-white ${className}`}
+      title={lang === "th" ? "Switch to English" : "สลับเป็นภาษาไทย"}>
+      <Languages className="w-4 h-4" />
+      {lang === "th" ? "EN" : "ไทย"}
+    </button>);
 }
 
 function ThemeToggle({ className = "" }) {
@@ -77,6 +93,7 @@ function ThemeToggle({ className = "" }) {
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { lang } = useLanguage();
   const [open, setOpen] = useState(false);
   const isTeacher = user?.user_type === "teacher";
   // ครู: เห็นเฉพาะเมนูครู | นักเรียน: เห็นเมนูนักเรียน + ปุ่ม Teacher Dashboard ล็อกไว้
@@ -94,14 +111,14 @@ export default function Layout() {
             <img src="https://media.base44.com/images/public/6a301ff5fe467608523f8e74/3b86a8beb_ChatGPT_Image_Jun_26_2026_06_33_05_PM.png" alt="Dino Tutor" className="w-12 h-12 rounded-full object-cover" />
             <div>
               <h1 className="font-display font-bold text-base text-white leading-none">Dino Tutor</h1>
-              <p className="text-xs text-white/45 font-body mt-0.5">เรียนเร็วกว่าใคร</p>
+              <p className="text-xs text-white/45 font-body mt-0.5">{tr[lang].sidebar.tagline}</p>
             </div>
           </Link>
         </div>
 
         {/* Token display */}
         <div className="mx-4 mt-4 mb-2 p-3 rounded-xl bg-white/8 border border-white/10">
-          <p className="text-xs text-white/50 font-semibold mb-1">⚡ Token คงเหลือ</p>
+          <p className="text-xs text-white/50 font-semibold mb-1">{tr[lang].sidebar.tokenBalance}</p>
           <p className="text-xl font-display font-bold text-white">{user?.tokens ?? 50}</p>
         </div>
 
@@ -112,13 +129,16 @@ export default function Layout() {
         </nav>
 
         <div className="px-4 py-3 border-t border-white/10 space-y-2">
-          <ThemeToggle className="w-full justify-center" />
+          <div className="flex gap-2">
+            <ThemeToggle className="flex-1 justify-center" />
+            <LanguageToggle className="flex-1 justify-center" />
+          </div>
           <button
             onClick={() => logout("/")}
             className="flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/8">
             
             <LogOut className="w-4 h-4" />
-            ออกจากระบบ
+            {tr[lang].sidebar.logout}
           </button>
         </div>
       </aside>
@@ -136,6 +156,7 @@ export default function Layout() {
             <span className="text-sm font-bold text-white">{user?.tokens ?? 50}</span>
           </div>
           <ThemeToggle />
+          <LanguageToggle />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-white/10 text-white">
@@ -149,7 +170,7 @@ export default function Layout() {
                     {user?.full_name?.[0] || "U"}
                   </div>
                   <div>
-                    <p className="font-bold text-sm text-white">{user?.full_name || "ผู้ใช้"}</p>
+                    <p className="font-bold text-sm text-white">{user?.full_name || tr[lang].sidebar.fallbackUser}</p>
                     <p className="text-xs text-white/50">{user?.email}</p>
                   </div>
                 </div>
@@ -164,13 +185,16 @@ export default function Layout() {
                 )}
               </nav>
               <div className="px-4 py-4 border-t border-white/10 space-y-2">
-                <ThemeToggle className="w-full justify-center" />
+                <div className="flex gap-2">
+                  <ThemeToggle className="flex-1 justify-center" />
+                  <LanguageToggle className="flex-1 justify-center" />
+                </div>
                 <button
                   onClick={() => logout("/")}
-                  className="flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors">
+                  className="flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/8">
                   
                   <LogOut className="w-4 h-4" />
-                  ออกจากระบบ
+                  {tr[lang].sidebar.logout}
                 </button>
               </div>
             </SheetContent>
